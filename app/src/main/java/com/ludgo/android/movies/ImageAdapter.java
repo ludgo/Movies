@@ -4,67 +4,39 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by ludgo on 14/08/2015.
  */
-public class ImageAdapter extends BaseAdapter {
+public class ImageAdapter extends ArrayAdapter {
     private Context context;
-    private final String[] imageStrValues;
+    private String[] imageUrls;
+    private LayoutInflater inflater;
 
-    public ImageAdapter(Context context, String[] imageStrValues) {
+    public ImageAdapter(Context context, String[] imageUrls) {
+        super(context, R.layout.grid_item, imageUrls);
+
         this.context = context;
-        this.imageStrValues = imageStrValues;
+        this.imageUrls = imageUrls;
+        inflater = LayoutInflater.from(context);
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View gridView;
-
-        if (convertView == null) {
-
-            gridView = inflater.inflate(R.layout.grid_item, null);
-
-            ImageView imageView = (ImageView) gridView
-                    .findViewById(R.id.grid_image);
-
-            String imageStr = imageStrValues[position];
-
-            if (imageStr.equals("untitled1")) {
-                imageView.setImageResource(R.drawable.untitled1);
-            } else if (imageStr.equals("untitled2")) {
-                imageView.setImageResource(R.drawable.untitled2);
-            } else if (imageStr.equals("untitled3")) {
-                imageView.setImageResource(R.drawable.untitled3);
-            } else if (imageStr.equals("untitled4")) {
-                imageView.setImageResource(R.drawable.untitled4);
-            }
-
-        } else {
-            gridView = (View) convertView;
+        if (null == convertView) {
+            convertView = inflater.inflate(R.layout.grid_item, parent, false);
         }
 
-        return gridView;
-    }
+        ImageView imageView = (ImageView) convertView;
 
-    @Override
-    public int getCount() {
-        return imageStrValues.length;
-    }
+        Picasso.with(context)
+                .load(imageUrls[position])
+                .into(imageView);
 
-    @Override
-    public Object getItem(int position) {
-        return null;
+        return convertView;
     }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
 }
