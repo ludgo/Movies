@@ -1,10 +1,14 @@
 package com.ludgo.android.movies;
 
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -18,7 +22,7 @@ import java.net.URL;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Display grid of movie posters
  */
 public class MainActivityFragment extends Fragment {
 
@@ -26,9 +30,33 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_fragment_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_refresh) {
+            FetchJsonTask fetchJsonTask = new FetchJsonTask();
+            fetchJsonTask.execute();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // dummy data
         String[] imageUrls = new String[]{
                 "http://image.tmdb.org/t/p/w342/7SGGUiTE6oc2fh9MjIk5M00dsQd.jpg",
                 "http://image.tmdb.org/t/p/w342/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg",
@@ -38,22 +66,32 @@ public class MainActivityFragment extends Fragment {
                 "http://image.tmdb.org/t/p/w342/uXZYawqUsChGSj54wcuBtEdUJbh.jpg",
                 "http://image.tmdb.org/t/p/w342/aAmfIX3TT40zUHGcCKrlOZRKC7u.jpg"};
 
+        // Catch own layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        // Find grid view
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
+        // Choose grid style
         int orientation = getResources().getConfiguration().orientation;
-        if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
-            gridView.setNumColumns(3);
-        } else if (orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // 2 columns when portrait orientation
             gridView.setNumColumns(2);
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // 3 columns when landscape orientation
+            gridView.setNumColumns(3);
         }
+        // Populate grid view with image posters via adapter
         gridView.setAdapter(new ImageAdapter(getActivity(), imageUrls));
 
+        // Use class for fetching JSON data
         FetchJsonTask fetchJsonTask = new FetchJsonTask();
         fetchJsonTask.execute();
 
         return rootView;
     }
 
+    /**
+     * Get String data from JSON HTTP request
+     */
     public class FetchJsonTask extends AsyncTask <Void, Void, Void> {
         private final String LOG_TAG = FetchJsonTask.class.getSimpleName();
 
@@ -101,7 +139,7 @@ public class MainActivityFragment extends Fragment {
                 movieApiString = buffer.toString();
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the movie data, there's no point in attemping
+                // If the code didn't successfully get the movie data, there's no point in attempting
                 // to parse it.
                 return null;
             } finally{
@@ -116,6 +154,8 @@ public class MainActivityFragment extends Fragment {
                     }
                 }
             }
+
+            Log.d(LOG_TAG, "FetchJsonTask executed");
 
             return null;
         }

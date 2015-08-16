@@ -10,12 +10,12 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 /**
- * Created by ludgo on 14/08/2015.
+ * Populate GridView with ImageView poster images
  */
 public class ImageAdapter extends ArrayAdapter {
     private Context context;
-    private String[] imageUrls;
     private LayoutInflater inflater;
+    private String[] imageUrls;
 
     public ImageAdapter(Context context, String[] imageUrls) {
         super(context, R.layout.grid_item, imageUrls);
@@ -33,6 +33,7 @@ public class ImageAdapter extends ArrayAdapter {
 
         ImageView imageView = (ImageView) convertView;
 
+        // Helper Picasso library
         Picasso.with(context)
                 .load(imageUrls[position])
                 .into(imageView);
