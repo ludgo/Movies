@@ -1,6 +1,7 @@
 package com.ludgo.android.movies;
 
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -45,7 +46,7 @@ public class MainActivityFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             FetchJsonTask fetchJsonTask = new FetchJsonTask();
-            fetchJsonTask.execute();
+            fetchJsonTask.execute("popularity.desc");
             return true;
         }
 
@@ -84,7 +85,7 @@ public class MainActivityFragment extends Fragment {
 
         // Use class for fetching JSON data
         FetchJsonTask fetchJsonTask = new FetchJsonTask();
-        fetchJsonTask.execute();
+        fetchJsonTask.execute("popularity.desc");
 
         return rootView;
     }
@@ -92,11 +93,16 @@ public class MainActivityFragment extends Fragment {
     /**
      * Get String data from JSON HTTP request
      */
-    public class FetchJsonTask extends AsyncTask <Void, Void, Void> {
+    public class FetchJsonTask extends AsyncTask <String, Void, Void> {
         private final String LOG_TAG = FetchJsonTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(String... params) {
+
+            if (params.length == 0) {
+                // Case of no params, nothing to do.
+                return null;
+            }
 
             // Network code for fetching JSON String
             HttpURLConnection urlConnection = null;
@@ -105,12 +111,25 @@ public class MainActivityFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String movieApiString = null;
 
+            // # is private key for developer
+            String apiKey = "#";
+
             try {
                 // Construct the URL for the themoviedb.org API query
                 // documentation at http://docs.themoviedb.apiary.io
-                // # is private key
-                URL url = new URL("http://api.themoviedb.org/3/discover/movie" +
-                        "?sort_by=popularity.desc&api_key=#");
+                final String FORECAST_BASE_URL =
+                        "http://api.themoviedb.org/3/discover/movie?";
+                final String SORT_PARAM = "sort_by";
+                final String KEY_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(SORT_PARAM, params[0])
+                        .appendQueryParameter(KEY_PARAM, apiKey)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                 // Create the request to themoviedb.org API, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
