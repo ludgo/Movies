@@ -14,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,11 +97,39 @@ public class MainActivityFragment extends Fragment {
     /**
      * Get String data from JSON HTTP request
      */
-    public class FetchJsonTask extends AsyncTask <String, Void, Void> {
+    public class FetchJsonTask extends AsyncTask <String, Void, String[]> {
+
         private final String LOG_TAG = FetchJsonTask.class.getSimpleName();
 
+        /**
+         * Take the String representing the complete forecast in JSON Format and
+         * pull out the data we need to construct the Strings needed for the wireframes.
+         */
+        private String[] getMovieDataFromJson(String movieJsonStr)
+                throws JSONException {
+
+            final String MOVIE_RESULTS = "results";
+            final String MOVIE_POSTER_PATH = "poster_path";
+
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray resultsArray = movieJson.getJSONArray(MOVIE_RESULTS);
+
+            // Array with poster url endings
+            String[] moviePosterPaths = new String[resultsArray.length()];
+            for(int i = 0; i < moviePosterPaths.length; i++) {
+                JSONObject movie = resultsArray.getJSONObject(i);
+                moviePosterPaths[i] = movie.getString(MOVIE_POSTER_PATH);
+            }
+
+            for (String s : moviePosterPaths) {
+                Log.v(LOG_TAG, "Poster path: " + s);
+            }
+            return moviePosterPaths;
+
+        }
+
         @Override
-        protected Void doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
 
             if (params.length == 0) {
                 // Case of no params, nothing to do.
@@ -147,7 +179,7 @@ public class MainActivityFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Adding a newline (without affect on parsing) for debugging purposes.
+                    // Adding a newline (without effect on parsing) for debugging purposes.
                     buffer.append(line + "\n");
                 }
 
@@ -174,8 +206,14 @@ public class MainActivityFragment extends Fragment {
                 }
             }
 
-            Log.d(LOG_TAG, "FetchJsonTask executed");
+            try {
+                return getMovieDataFromJson(movieApiString);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
 
+            // This will only happen if there was an error getting or parsing JSON
             return null;
         }
     }
