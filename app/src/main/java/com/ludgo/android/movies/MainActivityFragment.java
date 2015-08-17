@@ -24,12 +24,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
  * Display grid of movie posters
  */
 public class MainActivityFragment extends Fragment {
+
+    ImageAdapter mImageAdapter;
 
     public MainActivityFragment() {
     }
@@ -62,14 +65,14 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // dummy data
-        String[] imageUrls = new String[]{
-                "http://image.tmdb.org/t/p/w342/7SGGUiTE6oc2fh9MjIk5M00dsQd.jpg",
-                "http://image.tmdb.org/t/p/w342/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg",
-                "http://image.tmdb.org/t/p/w342/kqjL17yufvn9OVLyXYpvtyrFfak.jpg",
-                "http://image.tmdb.org/t/p/w342/yUlpRbbrac0GTNHZ1l20IHEcWAN.jpg",
-                "http://image.tmdb.org/t/p/w342/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg",
-                "http://image.tmdb.org/t/p/w342/uXZYawqUsChGSj54wcuBtEdUJbh.jpg",
-                "http://image.tmdb.org/t/p/w342/aAmfIX3TT40zUHGcCKrlOZRKC7u.jpg"};
+        ArrayList<String> imageUrls = new ArrayList<String>();
+        imageUrls.add("http://image.tmdb.org/t/p/w185/7SGGUiTE6oc2fh9MjIk5M00dsQd.jpg");
+        imageUrls.add("http://image.tmdb.org/t/p/w185/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg");
+        imageUrls.add("http://image.tmdb.org/t/p/w185/kqjL17yufvn9OVLyXYpvtyrFfak.jpg");
+        imageUrls.add("http://image.tmdb.org/t/p/w185/yUlpRbbrac0GTNHZ1l20IHEcWAN.jpg");
+        imageUrls.add("http://image.tmdb.org/t/p/w185/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg");
+        imageUrls.add("http://image.tmdb.org/t/p/w185/uXZYawqUsChGSj54wcuBtEdUJbh.jpg");
+        imageUrls.add("http://image.tmdb.org/t/p/w185/aAmfIX3TT40zUHGcCKrlOZRKC7u.jpg");
 
         // Catch own layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -84,12 +87,10 @@ public class MainActivityFragment extends Fragment {
             // 3 columns when landscape orientation
             gridView.setNumColumns(3);
         }
-        // Populate grid view with image posters via adapter
-        gridView.setAdapter(new ImageAdapter(getActivity(), imageUrls));
 
-        // Use class for fetching JSON data
-        FetchJsonTask fetchJsonTask = new FetchJsonTask();
-        fetchJsonTask.execute("popularity.desc");
+        // Populate grid view with image posters via adapter
+        mImageAdapter = new ImageAdapter(getActivity(), imageUrls);
+        gridView.setAdapter(mImageAdapter);
 
         return rootView;
     }
@@ -116,16 +117,19 @@ public class MainActivityFragment extends Fragment {
 
             // Array with poster url endings
             String[] moviePosterPaths = new String[resultsArray.length()];
-            for(int i = 0; i < moviePosterPaths.length; i++) {
+            for (int i = 0; i < moviePosterPaths.length; i++) {
                 JSONObject movie = resultsArray.getJSONObject(i);
                 moviePosterPaths[i] = movie.getString(MOVIE_POSTER_PATH);
             }
 
-            for (String s : moviePosterPaths) {
-                Log.v(LOG_TAG, "Poster path: " + s);
-            }
             return moviePosterPaths;
 
+        }
+
+        private String createUrlFromEnding(String ending) {
+            final String URL_BASE = "http://image.tmdb.org/t/p/w185/";
+            String urlString = URL_BASE + ending;
+            return urlString;
         }
 
         @Override
@@ -149,19 +153,17 @@ public class MainActivityFragment extends Fragment {
             try {
                 // Construct the URL for the themoviedb.org API query
                 // documentation at http://docs.themoviedb.apiary.io
-                final String FORECAST_BASE_URL =
+                final String API_BASE_URL =
                         "http://api.themoviedb.org/3/discover/movie?";
                 final String SORT_PARAM = "sort_by";
                 final String KEY_PARAM = "api_key";
 
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
                         .appendQueryParameter(SORT_PARAM, params[0])
                         .appendQueryParameter(KEY_PARAM, apiKey)
                         .build();
 
                 URL url = new URL(builtUri.toString());
-
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                 // Create the request to themoviedb.org API, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -193,7 +195,7 @@ public class MainActivityFragment extends Fragment {
                 // If the code didn't successfully get the movie data, there's no point in attempting
                 // to parse it.
                 return null;
-            } finally{
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
@@ -207,7 +209,12 @@ public class MainActivityFragment extends Fragment {
             }
 
             try {
-                return getMovieDataFromJson(movieApiString);
+                String[] movieEndings = getMovieDataFromJson(movieApiString);
+                String[] movieUrls = new String[movieEndings.length];
+                for (int i = 0; i < movieEndings.length; i++) {
+                    movieUrls[i] = createUrlFromEnding(movieEndings[i]);
+                }
+                return movieUrls;
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -215,6 +222,17 @@ public class MainActivityFragment extends Fragment {
 
             // This will only happen if there was an error getting or parsing JSON
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if (result != null) {
+                // Change dummy urls for fetched ones
+                mImageAdapter.clear();
+                for(String movieUri : result) {
+                    mImageAdapter.add(movieUri);
+                }
+            }
         }
     }
 }

@@ -9,15 +9,17 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 /**
  * Populate GridView with ImageView poster images
  */
-public class ImageAdapter extends ArrayAdapter {
+public class ImageAdapter extends ArrayAdapter<String> {
     private Context context;
     private LayoutInflater inflater;
-    private String[] imageUrls;
+    private ArrayList<String> imageUrls;
 
-    public ImageAdapter(Context context, String[] imageUrls) {
+    public ImageAdapter(Context context, ArrayList<String> imageUrls) {
         super(context, R.layout.grid_item, imageUrls);
 
         this.context = context;
@@ -35,7 +37,8 @@ public class ImageAdapter extends ArrayAdapter {
 
         // Helper Picasso library
         Picasso.with(context)
-                .load(imageUrls[position])
+                .load(imageUrls.get(position))
+                .resize(250,0)
                 .into(imageView);
 
         return convertView;
