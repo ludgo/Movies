@@ -12,7 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,6 +93,14 @@ public class MainActivityFragment extends Fragment {
         // Populate grid view with image posters via adapter
         mImageAdapter = new ImageAdapter(getActivity(), imageUrls);
         gridView.setAdapter(mImageAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String imageUrl = mImageAdapter.getItem(position);
+                Toast.makeText(getActivity(), imageUrl, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return rootView;
     }
