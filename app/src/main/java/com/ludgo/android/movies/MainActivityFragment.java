@@ -1,5 +1,6 @@
 package com.ludgo.android.movies;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,8 +97,10 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String imageUrl = mImageAdapter.getItem(position);
-                Toast.makeText(getActivity(), imageUrl, Toast.LENGTH_SHORT).show();
+                String posterUrl = mImageAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, posterUrl);
+                startActivity(intent);
             }
         });
 
@@ -133,7 +135,6 @@ public class MainActivityFragment extends Fragment {
             }
 
             return moviePosterPaths;
-
         }
 
         private String createUrlFromEnding(String ending) {
@@ -239,8 +240,8 @@ public class MainActivityFragment extends Fragment {
             if (result != null) {
                 // Change dummy urls for fetched ones
                 mImageAdapter.clear();
-                for(String movieUri : result) {
-                    mImageAdapter.add(movieUri);
+                for(String movieUrl : result) {
+                    mImageAdapter.add(movieUrl);
                 }
             }
         }
