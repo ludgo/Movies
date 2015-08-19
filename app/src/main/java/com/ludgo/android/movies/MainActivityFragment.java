@@ -56,13 +56,7 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            // Find rule how to order movies
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String sortRule = preferences.getString(getString(R.string.pref_sort_key),
-                    getString(R.string.pref_sort_entryValues_default));
-            // Display movie posters correspondingly
-            FetchJsonTask fetchJsonTask = new FetchJsonTask();
-            fetchJsonTask.execute(sortRule);
+            updateGrid();
             return true;
         }
 
@@ -72,16 +66,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        // dummy data
-        ArrayList<String> imageUrls = new ArrayList<String>();
-        imageUrls.add("http://image.tmdb.org/t/p/w185/7SGGUiTE6oc2fh9MjIk5M00dsQd.jpg");
-        imageUrls.add("http://image.tmdb.org/t/p/w185/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg");
-        imageUrls.add("http://image.tmdb.org/t/p/w185/kqjL17yufvn9OVLyXYpvtyrFfak.jpg");
-        imageUrls.add("http://image.tmdb.org/t/p/w185/yUlpRbbrac0GTNHZ1l20IHEcWAN.jpg");
-        imageUrls.add("http://image.tmdb.org/t/p/w185/aBBQSC8ZECGn6Wh92gKDOakSC8p.jpg");
-        imageUrls.add("http://image.tmdb.org/t/p/w185/uXZYawqUsChGSj54wcuBtEdUJbh.jpg");
-        imageUrls.add("http://image.tmdb.org/t/p/w185/aAmfIX3TT40zUHGcCKrlOZRKC7u.jpg");
 
         // Catch own layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -98,7 +82,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         // Populate grid view with image posters via adapter
-        mImageAdapter = new ImageAdapter(getActivity(), imageUrls);
+        mImageAdapter = new ImageAdapter(getActivity(), new ArrayList<String>());
         gridView.setAdapter(mImageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -112,6 +96,22 @@ public class MainActivityFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateGrid();
+    }
+
+    private void updateGrid() {
+        // Find rule how to order movies
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortRule = preferences.getString(getString(R.string.pref_sort_key),
+                getString(R.string.pref_sort_entryValues_default));
+        // Display movie posters correspondingly
+        FetchJsonTask fetchJsonTask = new FetchJsonTask();
+        fetchJsonTask.execute(sortRule);
     }
 
     /**
