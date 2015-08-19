@@ -1,10 +1,12 @@
 package com.ludgo.android.movies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,8 +56,13 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
+            // Find rule how to order movies
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String sortRule = preferences.getString(getString(R.string.pref_sort_key),
+                    getString(R.string.pref_sort_entryValues_default));
+            // Display movie posters correspondingly
             FetchJsonTask fetchJsonTask = new FetchJsonTask();
-            fetchJsonTask.execute("popularity.desc");
+            fetchJsonTask.execute(sortRule);
             return true;
         }
 
