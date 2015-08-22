@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.Hashtable;
 
 /**
- * Get String data from JSON HTTP request
+ * Get movies data from JSON HTTP request
  */
 public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
 
@@ -104,8 +104,7 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
         // Will contain the raw JSON response as a string.
         String movieApiString = null;
 
-        // # is private key for developer
-        String apiKey = "#";
+        String apiKey = Utility.API_KEY;
 
         try {
             // Construct the URL for the themoviedb.org API query

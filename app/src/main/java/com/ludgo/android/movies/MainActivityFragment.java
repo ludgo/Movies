@@ -86,16 +86,22 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String movie_id = Integer.toString( (Integer) allMoviesData[position].get(MOVIE_ID) );
                 String title = (String) allMoviesData[position].get(MOVIE_TITLE);
                 String overview = (String) allMoviesData[position].get(MOVIE_OVERVIEW);
-                double voteAverage = (Double) allMoviesData[position].get(MOVIE_VOTE_AVERAGE);
+                String voteAverage = Double.toString( (Double) allMoviesData[position].get(MOVIE_VOTE_AVERAGE) );
                 String releaseDate = (String) allMoviesData[position].get(MOVIE_RELEASE_DATE);
                 String posterPath = (String) allMoviesData[position].get(MOVIE_POSTER_PATH);
-
-                String[] movieDetail = {title, overview, Double.toString(voteAverage), releaseDate, posterPath};
+                String popularity = Double.toString( (Double) allMoviesData[position].get(MOVIE_POPULARITY) );
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movieDetail);
+                        .putExtra(MOVIE_ID, movie_id)
+                        .putExtra(MOVIE_TITLE, title)
+                        .putExtra(MOVIE_OVERVIEW, overview)
+                        .putExtra(MOVIE_POSTER_PATH, posterPath)
+                        .putExtra(MOVIE_RELEASE_DATE, releaseDate)
+                        .putExtra(MOVIE_VOTE_AVERAGE, voteAverage)
+                        .putExtra(MOVIE_POPULARITY, popularity);
                 startActivity(intent);
             }
         });
