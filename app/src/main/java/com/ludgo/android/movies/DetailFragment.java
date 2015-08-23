@@ -2,6 +2,7 @@ package com.ludgo.android.movies;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -191,7 +192,20 @@ public class DetailFragment extends Fragment {
                         Uri uri = getActivity().getContentResolver().insert(
                                 MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
 
-                        Log.d(LOG_TAG, "+1 popular inserted");
+                        // Debug:
+                        // Check if movie was really inserted
+                        Cursor c = getActivity().getContentResolver().query(
+                                MoviesContract.MoviesEntry.CONTENT_URI,
+                                null,
+                                MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " = " + movie_id,
+                                null,
+                                null);
+                        if (c.moveToFirst()) {
+                            int index = c.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_TITLE);
+                            String debugTitle = c.getString(index);
+                            Log.d(LOG_TAG, "+1 popular inserted: " + debugTitle);
+                        }
+                        c.close();
                     }
                 });
             }

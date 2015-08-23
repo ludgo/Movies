@@ -53,9 +53,5 @@ public final class MoviesContract {
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-        public static Uri buildPopularMovies() {
-            return CONTENT_URI.buildUpon().build();
-        }
     }
 }
