@@ -34,6 +34,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.ludgo.android.movies"
+            android:name=".data.MoviesProvider" />
     </application>
 
 </manifest>

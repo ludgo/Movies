@@ -25,20 +25,20 @@ public final class MoviesContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Possible paths (appended to base content URI for possible URI's)
-    public static final String PATH_MOVIE = "movie";
+    public static final String PATH_MOVIES = "movies";
 
     /* Inner class that defines the table contents of the movies table */
     public static final class MoviesEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
 
         // URI containing a Cursor of zero or more items.
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
         // URI containing a Cursor of a single item.
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIE;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
 
         public static final String TABLE_NAME = "movies";
 
@@ -50,9 +50,12 @@ public final class MoviesContract {
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
         public static final String COLUMN_POPULARITY = "popularity";
 
-        // @return Uri like content://com.ludgo.android.movies/movie/{id}
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildPopularMovies() {
+            return CONTENT_URI.buildUpon().build();
         }
     }
 }
