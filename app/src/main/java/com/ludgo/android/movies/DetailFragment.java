@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -35,13 +36,14 @@ import java.util.Hashtable;
 /**
  * All movie nitty-gritty
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailFragment extends Fragment {
 
     private VideoAdapter mVideoAdapter;
     private String MOVIE_ID;
-
+    private Hashtable[] allVideosData;
     // here is reference to view where reviews will be appended
     private LinearLayout footer;
+    private LayoutInflater inflater;
 
     // These are the names of goal values
     public static final String VIDEO_NAME = "name";
@@ -49,12 +51,13 @@ public class DetailActivityFragment extends Fragment {
     public static final String REVIEW_CONTENT = "content";
     public static final String REVIEW_AUTHOR = "author";
 
-    public DetailActivityFragment() {
+    public DetailFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        this.inflater = inflater;
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         // trailers list view is also root in this case
@@ -62,24 +65,41 @@ public class DetailActivityFragment extends Fragment {
         // all movie details will be prepended as header to trailers
         LinearLayout header = (LinearLayout) inflater.inflate(R.layout.fragment_detail_header, null);
         trailersListView.addHeaderView(header);
+        // all reviews will be appended as footer to trailers
         footer = (LinearLayout) inflater.inflate(R.layout.fragment_detail_footer, null);
         trailersListView.addFooterView(footer);
+
         // this adapter is to be populated with trailers
         mVideoAdapter = new VideoAdapter(getActivity(), new ArrayList<String>());
         trailersListView.setAdapter(mVideoAdapter);
+        trailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                // want to fire intent only after click on trailer text view
+                if (view.getId() == R.id.trailer) {
+                    // IMPORTANT !!
+                    // header became first child of trailers list view,
+                    // that is why -1 in the following line
+                    String videoKey = (String) allVideosData[position - 1].get(VIDEO_KEY);
+                    String videoUrl = Utility.createYoutubeUrlFromKey(videoKey);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl));
+                    startActivity(intent);
+                }
+            }
+        });
 
         // set received header data
         Intent intent = getActivity().getIntent();
         if (intent != null) {
-            if (intent.hasExtra(MainActivityFragment.MOVIE_ID)) {
+            if (intent.hasExtra(GridFragment.MOVIE_ID)) {
                 // save movie id
-                MOVIE_ID = getActivity().getIntent().getStringExtra(MainActivityFragment.MOVIE_ID);
+                MOVIE_ID = getActivity().getIntent().getStringExtra(GridFragment.MOVIE_ID);
             }
 
-            if (intent.hasExtra(MainActivityFragment.MOVIE_TITLE)) {
+            if (intent.hasExtra(GridFragment.MOVIE_TITLE)) {
                 // set title
                 TextView titleView = (TextView) rootView.findViewById(R.id.title);
-                String title = intent.getStringExtra(MainActivityFragment.MOVIE_TITLE);
+                String title = intent.getStringExtra(GridFragment.MOVIE_TITLE);
                 if (title.equals("null")) {
                     titleView.setText("<Unknown>");
                 } else {
@@ -92,36 +112,36 @@ public class DetailActivityFragment extends Fragment {
                 }
             }
 
-            if (intent.hasExtra(MainActivityFragment.MOVIE_OVERVIEW)) {
+            if (intent.hasExtra(GridFragment.MOVIE_OVERVIEW)) {
                 // set overview
-                String overview = intent.getStringExtra(MainActivityFragment.MOVIE_OVERVIEW);
+                String overview = intent.getStringExtra(GridFragment.MOVIE_OVERVIEW);
                 if (!overview.equals("No overview found.")) {
                     TextView overviewView = (TextView) rootView.findViewById(R.id.overview);
                     overviewView.setText(overview);
                 }
             }
 
-            if (intent.hasExtra(MainActivityFragment.MOVIE_VOTE_AVERAGE)) {
+            if (intent.hasExtra(GridFragment.MOVIE_VOTE_AVERAGE)) {
                 // set voteAverage
                 TextView overviewView = (TextView) rootView.findViewById(R.id.voteAverage);
-                overviewView.setText(intent.getStringExtra(MainActivityFragment.MOVIE_VOTE_AVERAGE) + "/10");
+                overviewView.setText(intent.getStringExtra(GridFragment.MOVIE_VOTE_AVERAGE) + "/10");
             }
 
-            if (intent.hasExtra(MainActivityFragment.MOVIE_RELEASE_DATE)) {
+            if (intent.hasExtra(GridFragment.MOVIE_RELEASE_DATE)) {
                 // set year
                 String year = Utility.createYearFromReleaseDate(
-                        intent.getStringExtra(MainActivityFragment.MOVIE_RELEASE_DATE));
+                        intent.getStringExtra(GridFragment.MOVIE_RELEASE_DATE));
                 if (!year.equals("null")) {
                     TextView yearView = (TextView) rootView.findViewById(R.id.year);
                     yearView.setText(year);
                 }
             }
 
-            if (intent.hasExtra(MainActivityFragment.MOVIE_POSTER_PATH)) {
+            if (intent.hasExtra(GridFragment.MOVIE_POSTER_PATH)) {
                 // set poster image
                 ImageView imageView = (ImageView) rootView.findViewById(R.id.poster);
                 String posterUrl = Utility.createUrlFromEnding(
-                        intent.getStringExtra(MainActivityFragment.MOVIE_POSTER_PATH)
+                        intent.getStringExtra(GridFragment.MOVIE_POSTER_PATH)
                 );
                 Picasso.with(getActivity())
                         .load(posterUrl)
@@ -180,7 +200,7 @@ public class DetailActivityFragment extends Fragment {
                     videoName = aVideo.getString(VIDEO_NAME);
                     videoKey = aVideo.getString(VIDEO_KEY);
 
-                    Hashtable videoDetails = new Hashtable(7);
+                    Hashtable videoDetails = new Hashtable(2);
 
                     videoDetails.put(VIDEO_NAME, videoName);
                     videoDetails.put(VIDEO_KEY, videoKey);
@@ -280,10 +300,13 @@ public class DetailActivityFragment extends Fragment {
         protected void onPostExecute(Hashtable[] result) {
             if (result != null) {
                 mVideoAdapter.clear();
+                allVideosData = new Hashtable[result.length];
                 for (int i = 0; i < result.length; i++) {
                     // populate adapter to fill trailers list
                     String trailerName = (String) result[i].get(VIDEO_NAME);
                     mVideoAdapter.add(trailerName);
+                    // populate hash tables to be able to fire intents
+                    allVideosData[i] = (Hashtable) result[i].clone();
                 }
             }
         }
@@ -330,7 +353,7 @@ public class DetailActivityFragment extends Fragment {
                     reviewContent = aReview.getString(REVIEW_CONTENT);
                     reviewAuthor = aReview.getString(REVIEW_AUTHOR);
 
-                    Hashtable reviewDetails = new Hashtable(7);
+                    Hashtable reviewDetails = new Hashtable(2);
 
                     reviewDetails.put(REVIEW_CONTENT, reviewContent);
                     reviewDetails.put(REVIEW_AUTHOR, reviewAuthor);
@@ -431,17 +454,11 @@ public class DetailActivityFragment extends Fragment {
             if (result != null) {
                 for (Hashtable review : result) {
                     // append all fetched reviews to footer
-                    try {
-                        String reviewWithAuthor = review.get(REVIEW_CONTENT)
-                                + " <b>(" + review.get(REVIEW_AUTHOR) + ")</b>";
-                        TextView reviewTextView = (TextView) getActivity().getLayoutInflater()
-                                .inflate(R.layout.review_item, null);
-                        reviewTextView.setText(Html.fromHtml(reviewWithAuthor));
-                        footer.addView(reviewTextView);
-                    } catch (NullPointerException e) {
-                        Log.e(LOG_TAG, e.getMessage(), e);
-                        e.printStackTrace();
-                    }
+                    String reviewWithAuthor = review.get(REVIEW_CONTENT)
+                            + " <b>(" + review.get(REVIEW_AUTHOR) + ")</b>";
+                    TextView reviewTextView = (TextView) inflater.inflate(R.layout.review_item, null);
+                    reviewTextView.setText(Html.fromHtml(reviewWithAuthor));
+                    footer.addView(reviewTextView);
                 }
             }
         }

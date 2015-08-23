@@ -22,7 +22,7 @@ import java.util.Hashtable;
 /**
  * Display grid of movie posters
  */
-public class MainActivityFragment extends Fragment {
+public class GridFragment extends Fragment {
 
     private ImageAdapter mImageAdapter;
     public static Hashtable[] allMoviesData;
@@ -36,7 +36,7 @@ public class MainActivityFragment extends Fragment {
     public static final String MOVIE_VOTE_AVERAGE = "vote_average";
     public static final String MOVIE_POPULARITY = "popularity";
 
-    public MainActivityFragment() {
+    public GridFragment() {
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Catch own layout
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         // Find grid view
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
         // Choose grid style
@@ -83,7 +83,6 @@ public class MainActivityFragment extends Fragment {
         mImageAdapter = new ImageAdapter(getActivity(), new ArrayList<String>());
         gridView.setAdapter(mImageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String movie_id = Integer.toString( (Integer) allMoviesData[position].get(MOVIE_ID) );

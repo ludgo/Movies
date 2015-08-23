@@ -59,23 +59,23 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
                 // Get the JSON object representing one particular movie
                 JSONObject aMovie = resultsArray.getJSONObject(i);
 
-                movie_id = aMovie.getInt(MainActivityFragment.MOVIE_ID);
-                title = aMovie.getString(MainActivityFragment.MOVIE_TITLE);
-                overview = aMovie.getString(MainActivityFragment.MOVIE_OVERVIEW);
-                poster_path = aMovie.getString(MainActivityFragment.MOVIE_POSTER_PATH);
-                release_date = aMovie.getString(MainActivityFragment.MOVIE_RELEASE_DATE);
-                vote_average = aMovie.getDouble(MainActivityFragment.MOVIE_VOTE_AVERAGE);
-                popularity = aMovie.getDouble(MainActivityFragment.MOVIE_POPULARITY);
+                movie_id = aMovie.getInt(GridFragment.MOVIE_ID);
+                title = aMovie.getString(GridFragment.MOVIE_TITLE);
+                overview = aMovie.getString(GridFragment.MOVIE_OVERVIEW);
+                poster_path = aMovie.getString(GridFragment.MOVIE_POSTER_PATH);
+                release_date = aMovie.getString(GridFragment.MOVIE_RELEASE_DATE);
+                vote_average = aMovie.getDouble(GridFragment.MOVIE_VOTE_AVERAGE);
+                popularity = aMovie.getDouble(GridFragment.MOVIE_POPULARITY);
 
                 Hashtable movieDetails = new Hashtable(7);
 
-                movieDetails.put(MainActivityFragment.MOVIE_ID, movie_id);
-                movieDetails.put(MainActivityFragment.MOVIE_TITLE, title);
-                movieDetails.put(MainActivityFragment.MOVIE_OVERVIEW, overview);
-                movieDetails.put(MainActivityFragment.MOVIE_POSTER_PATH, poster_path);
-                movieDetails.put(MainActivityFragment.MOVIE_RELEASE_DATE, release_date);
-                movieDetails.put(MainActivityFragment.MOVIE_VOTE_AVERAGE, vote_average);
-                movieDetails.put(MainActivityFragment.MOVIE_POPULARITY, popularity);
+                movieDetails.put(GridFragment.MOVIE_ID, movie_id);
+                movieDetails.put(GridFragment.MOVIE_TITLE, title);
+                movieDetails.put(GridFragment.MOVIE_OVERVIEW, overview);
+                movieDetails.put(GridFragment.MOVIE_POSTER_PATH, poster_path);
+                movieDetails.put(GridFragment.MOVIE_RELEASE_DATE, release_date);
+                movieDetails.put(GridFragment.MOVIE_VOTE_AVERAGE, vote_average);
+                movieDetails.put(GridFragment.MOVIE_POPULARITY, popularity);
 
                 allFetchedMovies[i] = movieDetails;
             }
@@ -179,14 +179,14 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
     protected void onPostExecute(Hashtable[] result) {
         if (result != null) {
             mImageAdapter.clear();
-            MainActivityFragment.allMoviesData = new Hashtable[result.length];
+            GridFragment.allMoviesData = new Hashtable[result.length];
             for(int i = 0; i < result.length; i++) {
                 // populate adapter to fill grid
-                String urlEnding = (String) result[i].get(MainActivityFragment.MOVIE_POSTER_PATH);
+                String urlEnding = (String) result[i].get(GridFragment.MOVIE_POSTER_PATH);
                 String movieUrl = Utility.createUrlFromEnding(urlEnding);
                 mImageAdapter.add(movieUrl);
-                // populate hashtable to be able to fire intents
-                MainActivityFragment.allMoviesData[i] = (Hashtable) result[i].clone();
+                // populate hash tables to be able to fire intents
+                GridFragment.allMoviesData[i] = (Hashtable) result[i].clone();
             }
         }
     }

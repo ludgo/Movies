@@ -24,4 +24,8 @@ public class Utility {
         }
         return releaseDate;
     }
+
+    public static String createYoutubeUrlFromKey (String key) {
+        return "http://www.youtube.com/watch?v=" + key;
+    }
 }
