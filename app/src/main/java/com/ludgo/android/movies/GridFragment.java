@@ -1,10 +1,8 @@
 package com.ludgo.android.movies;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -115,10 +113,7 @@ public class GridFragment extends Fragment {
     }
 
     private void updateGrid() {
-        // Find rule how to order movies
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortRule = preferences.getString(getString(R.string.pref_sort_key),
-                getString(R.string.pref_sort_entryValues_default));
+        String sortRule = Utility.getOrderRule(getActivity());
         // Display movie posters correspondingly
         FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(mImageAdapter);
         fetchMoviesTask.execute(sortRule);

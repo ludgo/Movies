@@ -1,5 +1,9 @@
 package com.ludgo.android.movies;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 public class Utility {
 
     // # is private key for developer
@@ -27,5 +31,13 @@ public class Utility {
 
     public static String createYoutubeUrlFromKey (String key) {
         return "http://www.youtube.com/watch?v=" + key;
+    }
+
+    // @return is either 'popularity.desc' or 'vote_average.desc'
+    public static String getOrderRule(Context context) {
+        // Find rule how to order movies in grid
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(context.getString(R.string.pref_sort_key),
+                context.getString(R.string.pref_sort_entryValues_default));
     }
 }
