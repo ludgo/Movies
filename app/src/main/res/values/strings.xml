@@ -11,7 +11,15 @@
     <string name="pref_sort_key" translatable="false">sort_by</string>
     <string name="pref_sort_entryValues_default" translatable="false">popularity.desc</string>
     <string name="pref_sort_entryValues_popularity" translatable="false">popularity.desc</string>
-    <string name="pref_sort_entryValues_ranking" translatable="false">vote_average.desc</string>
+    <string name="pref_sort_entryValues_voteAverage" translatable="false">vote_average.desc</string>
     <string name="pref_sort_entries_popularity">Most popular</string>
-    <string name="pref_sort_entries_ranking">Highest rated</string>
+    <string name="pref_sort_entries_voteAverage">Highest rated</string>
+
+    <string name="pref_show_title">Show</string>
+    <string name="pref_show_key" translatable="false">show</string>
+    <string name="pref_show_entryValues_default" translatable="false">all</string>
+    <string name="pref_show_entryValues_all" translatable="false">all</string>
+    <string name="pref_show_entryValues_favorites" translatable="false">favorites</string>
+    <string name="pref_show_entries_all">All</string>
+    <string name="pref_show_entries_favorites">Favorites</string>
 </resources>

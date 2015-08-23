@@ -126,7 +126,7 @@ public class GridFragment extends Fragment {
     }
 
     private void updateGrid() {
-        String sortRule = Utility.getOrderRule(getActivity());
+        String sortRule = Utility.getSortRule(getActivity());
         // Display movie posters correspondingly
         FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(mImageAdapter);
         fetchMoviesTask.execute(sortRule);

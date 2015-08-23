@@ -33,11 +33,17 @@ public class Utility {
         return "http://www.youtube.com/watch?v=" + key;
     }
 
-    // @return is either 'popularity.desc' or 'vote_average.desc'
-    public static String getOrderRule(Context context) {
-        // Find rule how to order movies in grid
+    // Find rule how to order movies in grid
+    public static String getSortRule(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(context.getString(R.string.pref_sort_key),
                 context.getString(R.string.pref_sort_entryValues_default));
+    }
+
+    // Find rule what to display in grid
+    public static String getShowRule(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(context.getString(R.string.pref_show_key),
+                context.getString(R.string.pref_show_entryValues_default));
     }
 }

@@ -3,12 +3,20 @@
 
     <string-array name="pref_sort_entryValues">
         <item>@string/pref_sort_entryValues_popularity</item>
-        <item>@string/pref_sort_entryValues_ranking</item>
+        <item>@string/pref_sort_entryValues_voteAverage</item>
     </string-array>
-
     <string-array name="pref_sort_entries">
         <item>@string/pref_sort_entries_popularity</item>
-        <item>@string/pref_sort_entries_ranking</item>
+        <item>@string/pref_sort_entries_voteAverage</item>
+    </string-array>
+
+    <string-array name="pref_show_entryValues">
+        <item>@string/pref_show_entryValues_all</item>
+        <item>@string/pref_show_entryValues_favorites</item>
+    </string-array>
+    <string-array name="pref_show_entries">
+        <item>@string/pref_show_entries_all</item>
+        <item>@string/pref_show_entries_favorites</item>
     </string-array>
 
 </resources>

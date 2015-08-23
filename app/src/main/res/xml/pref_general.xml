@@ -6,4 +6,11 @@
         android:entryValues="@array/pref_sort_entryValues"
         android:key="@string/pref_sort_key"
         android:title="@string/pref_sort_title" />
+
+    <ListPreference
+        android:defaultValue="@string/pref_show_entryValues_default"
+        android:entries="@array/pref_show_entries"
+        android:entryValues="@array/pref_show_entryValues"
+        android:key="@string/pref_show_key"
+        android:title="@string/pref_show_title" />
 </PreferenceScreen>
