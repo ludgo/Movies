@@ -1,8 +1,12 @@
 package com.ludgo.android.movies;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.ludgo.android.movies.data.MoviesContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,37 +18,33 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Hashtable;
 
 /**
  * Get movies data from JSON HTTP request
  */
-public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
+public class FetchMoviesTask extends AsyncTask <String, Void, Void> {
 
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-    private ImageAdapter mImageAdapter;
+    private final Context mContext;
 
-    public FetchMoviesTask(ImageAdapter imageAdapter) {
-        mImageAdapter = imageAdapter;
+    public FetchMoviesTask(Context context) {
+        mContext = context;
     }
 
     /**
      * Take the String representing the complete movies in JSON Format and
      * pull out the data needed to construct the wireframes.
      */
-    private Hashtable[] getMovieDataFromJson(String movieJsonStr)
+    private void getMoviesDataFromJson(String moviesJsonStr)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
         final String MOVIE_RESULTS = "results";
 
         try {
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray resultsArray = movieJson.getJSONArray(MOVIE_RESULTS);
-
-            // All necessary data for UX will be stored here
-            Hashtable[] allFetchedMovies = new Hashtable[resultsArray.length()];
+            JSONObject moviesJson = new JSONObject(moviesJsonStr);
+            JSONArray resultsArray = moviesJson.getJSONArray(MOVIE_RESULTS);
 
             for(int i = 0; i < resultsArray.length(); i++) {
                 // These are the values that will be collected for each movie.
@@ -67,30 +67,28 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
                 vote_average = aMovie.getDouble(GridFragment.MOVIE_VOTE_AVERAGE);
                 popularity = aMovie.getDouble(GridFragment.MOVIE_POPULARITY);
 
-                Hashtable movieDetails = new Hashtable(7);
+                // Insert the movie information into the database
+                ContentValues movieValues = new ContentValues();
 
-                movieDetails.put(GridFragment.MOVIE_ID, movie_id);
-                movieDetails.put(GridFragment.MOVIE_TITLE, title);
-                movieDetails.put(GridFragment.MOVIE_OVERVIEW, overview);
-                movieDetails.put(GridFragment.MOVIE_POSTER_PATH, poster_path);
-                movieDetails.put(GridFragment.MOVIE_RELEASE_DATE, release_date);
-                movieDetails.put(GridFragment.MOVIE_VOTE_AVERAGE, vote_average);
-                movieDetails.put(GridFragment.MOVIE_POPULARITY, popularity);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
+                movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
 
-                allFetchedMovies[i] = movieDetails;
+                Uri returnedUri = mContext.getContentResolver().insert(
+                        MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
             }
-
-            return allFetchedMovies;
-
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-        return null;
     }
 
     @Override
-    protected Hashtable[] doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
 
         if (params.length == 0) {
             // Case of no params, nothing to do.
@@ -102,7 +100,7 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String movieApiString = null;
+        String moviesApiString;
 
         String apiKey = Utility.API_KEY;
 
@@ -145,12 +143,16 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
                 // Stream was empty.  No point in parsing.
                 return null;
             }
-            movieApiString = buffer.toString();
+            moviesApiString = buffer.toString();
+            getMoviesDataFromJson(moviesApiString);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the movie data, there's no point in attempting
             // to parse it.
             return null;
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -164,30 +166,7 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Hashtable[]> {
             }
         }
 
-        try {
-            return getMovieDataFromJson(movieApiString);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-
         // This will only happen if there was an error getting or parsing JSON
         return null;
-    }
-
-    @Override
-    protected void onPostExecute(Hashtable[] result) {
-        if (result != null) {
-            mImageAdapter.clear();
-            GridFragment.allMoviesData = new Hashtable[result.length];
-            for(int i = 0; i < result.length; i++) {
-                // populate adapter to fill grid
-                String urlEnding = (String) result[i].get(GridFragment.MOVIE_POSTER_PATH);
-                String movieUrl = Utility.createUrlFromEnding(urlEnding);
-                mImageAdapter.add(movieUrl);
-                // populate hash tables to be able to fire intents
-                GridFragment.allMoviesData[i] = (Hashtable) result[i].clone();
-            }
-        }
     }
 }
