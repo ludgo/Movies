@@ -22,7 +22,7 @@ import java.net.URL;
 /**
  * Get movies data from JSON HTTP request
  */
-public class FetchMoviesTask extends AsyncTask <String, Void, Void> {
+public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
 
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
@@ -46,7 +46,7 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Void> {
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
             JSONArray resultsArray = moviesJson.getJSONArray(MOVIE_RESULTS);
 
-            for(int i = 0; i < resultsArray.length(); i++) {
+            for (int i = 0; i < resultsArray.length(); i++) {
                 // These are the values that will be collected for each movie.
                 int movie_id;
                 String title;
@@ -59,13 +59,22 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Void> {
                 // Get the JSON object representing one particular movie
                 JSONObject aMovie = resultsArray.getJSONObject(i);
 
-                movie_id = aMovie.getInt(GridFragment.MOVIE_ID);
-                title = aMovie.getString(GridFragment.MOVIE_TITLE);
-                overview = aMovie.getString(GridFragment.MOVIE_OVERVIEW);
-                poster_path = aMovie.getString(GridFragment.MOVIE_POSTER_PATH);
-                release_date = aMovie.getString(GridFragment.MOVIE_RELEASE_DATE);
-                vote_average = aMovie.getDouble(GridFragment.MOVIE_VOTE_AVERAGE);
-                popularity = aMovie.getDouble(GridFragment.MOVIE_POPULARITY);
+                // These are the names of goal values
+                final String NAME_ID = "id";
+                final String NAME_TITLE = "title";
+                final String NAME_OVERVIEW = "overview";
+                final String NAME_POSTER_PATH = "poster_path";
+                final String NAME_RELEASE_DATE = "release_date";
+                final String NAME_VOTE_AVERAGE = "vote_average";
+                final String NAME_POPULARITY = "popularity";
+
+                movie_id = aMovie.getInt(NAME_ID);
+                title = aMovie.getString(NAME_TITLE);
+                overview = aMovie.getString(NAME_OVERVIEW);
+                poster_path = aMovie.getString(NAME_POSTER_PATH);
+                release_date = aMovie.getString(NAME_RELEASE_DATE);
+                vote_average = aMovie.getDouble(NAME_VOTE_AVERAGE);
+                popularity = aMovie.getDouble(NAME_POPULARITY);
 
                 // Insert the movie information into the database
                 ContentValues movieValues = new ContentValues();
@@ -80,6 +89,8 @@ public class FetchMoviesTask extends AsyncTask <String, Void, Void> {
 
                 Uri returnedUri = mContext.getContentResolver().insert(
                         MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
+
+                Log.v(LOG_TAG, "+1 inserted");
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

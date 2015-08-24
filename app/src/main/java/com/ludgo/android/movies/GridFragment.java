@@ -1,5 +1,6 @@
 package com.ludgo.android.movies;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.ludgo.android.movies.data.MoviesContract;
@@ -23,23 +25,17 @@ import com.ludgo.android.movies.data.MoviesContract;
  */
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private final String LOG_TAG = GridFragment.class.getSimpleName();
+
     // Set id for each loader
     private static final int GRID_LOADER = 0;
 
     PopularAdapter mPopularAdapter;
 
-    // Rules how to order grid
-    String showRule;
-    String sortRule;
-
-    // These are the names of goal values
-    public static final String MOVIE_ID = "id";
-    public static final String MOVIE_TITLE = "title";
-    public static final String MOVIE_OVERVIEW = "overview";
-    public static final String MOVIE_POSTER_PATH = "poster_path";
-    public static final String MOVIE_RELEASE_DATE = "release_date";
-    public static final String MOVIE_VOTE_AVERAGE = "vote_average";
-    public static final String MOVIE_POPULARITY = "popularity";
+    // Indices tied to GRID_LOADER CursorLoader projection to map column index in Cursor
+    // Carefully consider any changes!
+    static final int COL_MOVIE_ID = 1;
+    static final int COL_POSTER_PATH = 2;
 
     public GridFragment() {
     }
@@ -69,10 +65,6 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Load necessary rules
-        showRule = Utility.getShowRule(getActivity());
-        sortRule = Utility.getSortRule(getActivity());
-
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         // Find grid view
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
@@ -86,65 +78,27 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             gridView.setNumColumns(3);
         }
 
-        // set adapter with empty cursor
+        // Set adapter with empty cursor
         // Note: CursorLoader will automatically initiate Cursor and register ContentObserver
         // on it, that is why no flags needed
         mPopularAdapter = new PopularAdapter(getActivity(), null, 0);
         gridView.setAdapter(mPopularAdapter);
-
-//        if (showRule.equals(
-//                getActivity().getString(R.string.pref_show_entryValues_all))) {
-//            mPopularAdapter = new PopularAdapter(getActivity(), null, 0);
-//            gridView.setAdapter(mPopularAdapter);
-//        } else if (showRule.equals(
-//                getActivity().getString(R.string.pref_show_entryValues_favorites))) {
-//            Cursor c = getActivity().getContentResolver().query(
-//                    MoviesContract.MoviesEntry.CONTENT_URI,
-//                    new String[]{MoviesContract.MoviesEntry._ID,
-//                            MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
-//                            MoviesContract.MoviesEntry.COLUMN_MOVIE_ID},
-//                    MoviesContract.MoviesEntry.COLUMN_FAVORITE + " = 1",
-//                    null,
-//                    null);
-//            gridView.setAdapter(new PopularAdapter(getActivity(), c, 0));
-//        }
-
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-//                String movie_id = Integer.toString( (Integer) allMoviesData[position].get(MOVIE_ID) );
-//                String title = (String) allMoviesData[position].get(MOVIE_TITLE);
-//                String overview = (String) allMoviesData[position].get(MOVIE_OVERVIEW);
-//                String voteAverage = Double.toString( (Double) allMoviesData[position].get(MOVIE_VOTE_AVERAGE) );
-//                String releaseDate = (String) allMoviesData[position].get(MOVIE_RELEASE_DATE);
-//                String posterPath = (String) allMoviesData[position].get(MOVIE_POSTER_PATH);
-//                String popularity = Double.toString( (Double) allMoviesData[position].get(MOVIE_POPULARITY) );
-//
-//                Intent intent = new Intent(getActivity(), DetailActivity.class)
-//                        .putExtra(MOVIE_ID, movie_id)
-//                        .putExtra(MOVIE_TITLE, title)
-//                        .putExtra(MOVIE_OVERVIEW, overview)
-//                        .putExtra(MOVIE_POSTER_PATH, posterPath)
-//                        .putExtra(MOVIE_RELEASE_DATE, releaseDate)
-//                        .putExtra(MOVIE_VOTE_AVERAGE, voteAverage)
-//                        .putExtra(MOVIE_POPULARITY, popularity);
-//                startActivity(intent);
-//            }
-//        });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (cursor != null) {
+                    int movie_id = cursor.getInt(COL_MOVIE_ID);
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .putExtra("movie_id", movie_id);
+                    startActivity(intent);
+                }
+            }
+        });
 
         return rootView;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateGrid();
-    }
-
-    private void updateGrid() {
-        // Display movie posters correspondingly
-        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getActivity());
-        fetchMoviesTask.execute(sortRule);
     }
 
     @Override
@@ -154,30 +108,51 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        fetchData();
+        updateGrid();
+    }
+
+    // If settings have been changed since the activity was created, we need to fetch again
+    void fetchData() {
+        // Save movies details in database
+        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getActivity());
+        fetchMoviesTask.execute(MainActivity.getSortRule());
+    }
+
+    // If settings have been changed since the activity was created, we need restart of grid
+    void updateGrid() {
+        // Display movie posters correspondingly
+        getLoaderManager().restartLoader(GRID_LOADER, null, this);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 
-        // by which column to sort
+        // By which column to sort
         String sortColumn = null;
-        if (sortRule.equals(
+        if (MainActivity.getSortRule().equals(
                 getActivity().getString(R.string.pref_sort_entryValues_popularity)
-        )){
+        )) {
             sortColumn = MoviesContract.MoviesEntry.COLUMN_POPULARITY;
-        } else if (sortRule.equals(
+        } else if (MainActivity.getSortRule().equals(
                 getActivity().getString(R.string.pref_sort_entryValues_voteAverage)
-        )){
+        )) {
             sortColumn = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE;
         }
 
-        // if show only favorites
+        // If show only favorites
         String showOption = null;
-        if (showRule.equals(
+        if (MainActivity.getShowRule().equals(
                 getActivity().getString(R.string.pref_show_entryValues_favorites)
-        )){
+        )) {
             showOption = MoviesContract.MoviesEntry.COLUMN_FAVORITE + " = 1";
         }
 
         return new CursorLoader(getActivity(),
                 MoviesContract.MoviesEntry.CONTENT_URI,
+                // if projection changes, indices must change!
                 new String[]{MoviesContract.MoviesEntry._ID,
                         MoviesContract.MoviesEntry.COLUMN_MOVIE_ID,
                         MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,

@@ -1,6 +1,5 @@
 package com.ludgo.android.movies;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -8,19 +7,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.ludgo.android.movies.data.MoviesContract;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,94 +95,100 @@ public class DetailFragment extends Fragment {
         });
 
         Intent intent = getActivity().getIntent();
-        if (intent != null) {
-            // set received header data
-            if (intent.hasExtra(GridFragment.MOVIE_TITLE)) {
-                // set title
-                TextView titleView = (TextView) rootView.findViewById(R.id.title);
-                title = intent.getStringExtra(GridFragment.MOVIE_TITLE);
-                if (title.equals("null")) {
-                    titleView.setText("<Unknown>");
-                    titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 45);
-                    title = null;
-                } else {
-                    titleView.setText(title);
-                    if (title.length() < 25) {
-                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 45);
-                    } else {
-                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-                    }
-                }
-            }
-            if (intent.hasExtra(GridFragment.MOVIE_OVERVIEW)) {
-                // set overview
-                overview = intent.getStringExtra(GridFragment.MOVIE_OVERVIEW);
-                if (overview.equals("No overview found.")) {
-                    overview = null;
-                } else {
-                    TextView overviewView = (TextView) rootView.findViewById(R.id.overview);
-                    overviewView.setText(overview);
-                }
-            }
-            if (intent.hasExtra(GridFragment.MOVIE_POSTER_PATH)) {
-                // set poster image
-                poster_path = intent.getStringExtra(GridFragment.MOVIE_POSTER_PATH);
-                if (poster_path.equals("null")) {
-                    poster_path = null;
-                } else {
-                    ImageView imageView = (ImageView) rootView.findViewById(R.id.poster);
-                    String posterUrl = Utility.createUrlFromEnding(poster_path);
-                    Picasso.with(getActivity())
-                            .load(posterUrl)
-                            .into(imageView);
-                }
-            }
-            if (intent.hasExtra(GridFragment.MOVIE_RELEASE_DATE)) {
-                // set year
-                release_date = intent.getStringExtra(GridFragment.MOVIE_RELEASE_DATE);
-                String year = Utility.createYearFromReleaseDate(release_date);
-                if (year.equals("null")) {
-                    release_date = null;
-                } else {
-                    TextView yearView = (TextView) rootView.findViewById(R.id.year);
-                    yearView.setText(year);
-                }
-            }
-            if (intent.hasExtra(GridFragment.MOVIE_VOTE_AVERAGE)) {
-                // set voteAverage
-                String voteAverageStr = intent.getStringExtra(GridFragment.MOVIE_VOTE_AVERAGE);
-                vote_average = Double.parseDouble(voteAverageStr);
-                TextView overviewView = (TextView) rootView.findViewById(R.id.voteAverage);
-                overviewView.setText(voteAverageStr + "/10");
-            }
-            if (intent.hasExtra(GridFragment.MOVIE_POPULARITY)) {
-                // set voteAverage
-                String popularityStr = intent.getStringExtra(GridFragment.MOVIE_POPULARITY);
-                popularity = Double.parseDouble(popularityStr);
-            }
+        if (intent != null && intent.hasExtra("movie_id")) {
+            movie_id = intent.getIntExtra("movie_id", 0);
+        }
 
-            if (intent.hasExtra(GridFragment.MOVIE_ID)) {
-                // save movie id
-                String movieIdStr = intent.getStringExtra(GridFragment.MOVIE_ID);
-                movie_id = Integer.parseInt(movieIdStr);
 
-                // allow user to mark movie as popular
-                Button popular = (Button) rootView.findViewById(R.id.popular);
-                popular.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Insert the movie information into the database
-                        ContentValues movieValues = new ContentValues();
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
-                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
-
-                        Uri uri = getActivity().getContentResolver().insert(
-                                MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
+//        Intent intent = getActivity().getIntent();
+//        if (intent != null) {
+//            // set received header data
+//            if (intent.hasExtra(GridFragment.MOVIE_TITLE)) {
+//                // set title
+//                TextView titleView = (TextView) rootView.findViewById(R.id.title);
+//                title = intent.getStringExtra(GridFragment.MOVIE_TITLE);
+//                if (title.equals("null")) {
+//                    titleView.setText("<Unknown>");
+//                    titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 45);
+//                    title = null;
+//                } else {
+//                    titleView.setText(title);
+//                    if (title.length() < 25) {
+//                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 45);
+//                    } else {
+//                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+//                    }
+//                }
+//            }
+//            if (intent.hasExtra(GridFragment.MOVIE_OVERVIEW)) {
+//                // set overview
+//                overview = intent.getStringExtra(GridFragment.MOVIE_OVERVIEW);
+//                if (overview.equals("No overview found.")) {
+//                    overview = null;
+//                } else {
+//                    TextView overviewView = (TextView) rootView.findViewById(R.id.overview);
+//                    overviewView.setText(overview);
+//                }
+//            }
+//            if (intent.hasExtra(GridFragment.MOVIE_POSTER_PATH)) {
+//                // set poster image
+//                poster_path = intent.getStringExtra(GridFragment.MOVIE_POSTER_PATH);
+//                if (poster_path.equals("null")) {
+//                    poster_path = null;
+//                } else {
+//                    ImageView imageView = (ImageView) rootView.findViewById(R.id.poster);
+//                    String posterUrl = Utility.createUrlFromEnding(poster_path);
+//                    Picasso.with(getActivity())
+//                            .load(posterUrl)
+//                            .into(imageView);
+//                }
+//            }
+//            if (intent.hasExtra(GridFragment.MOVIE_RELEASE_DATE)) {
+//                // set year
+//                release_date = intent.getStringExtra(GridFragment.MOVIE_RELEASE_DATE);
+//                String year = Utility.createYearFromReleaseDate(release_date);
+//                if (year.equals("null")) {
+//                    release_date = null;
+//                } else {
+//                    TextView yearView = (TextView) rootView.findViewById(R.id.year);
+//                    yearView.setText(year);
+//                }
+//            }
+//            if (intent.hasExtra(GridFragment.MOVIE_VOTE_AVERAGE)) {
+//                // set voteAverage
+//                String voteAverageStr = intent.getStringExtra(GridFragment.MOVIE_VOTE_AVERAGE);
+//                vote_average = Double.parseDouble(voteAverageStr);
+//                TextView overviewView = (TextView) rootView.findViewById(R.id.voteAverage);
+//                overviewView.setText(voteAverageStr + "/10");
+//            }
+//            if (intent.hasExtra(GridFragment.MOVIE_POPULARITY)) {
+//                // set voteAverage
+//                String popularityStr = intent.getStringExtra(GridFragment.MOVIE_POPULARITY);
+//                popularity = Double.parseDouble(popularityStr);
+//            }
+//
+//            if (intent.hasExtra(GridFragment.MOVIE_ID)) {
+//                // save movie id
+//                String movieIdStr = intent.getStringExtra(GridFragment.MOVIE_ID);
+//                movie_id = Integer.parseInt(movieIdStr);
+//
+//                // allow user to mark movie as popular
+//                Button popular = (Button) rootView.findViewById(R.id.popular);
+//                popular.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // Insert the movie information into the database
+//                        ContentValues movieValues = new ContentValues();
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
+//                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
+//
+//                        Uri uri = getActivity().getContentResolver().insert(
+//                                MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
 //
 //                        // Debug:
 //                        // Check if movie was really inserted
@@ -205,11 +204,11 @@ public class DetailFragment extends Fragment {
 //                            Log.d(LOG_TAG, "+1 popular inserted: " + debugTitle);
 //                        }
 //                        c.close();
-                    }
-                });
-            }
-
-        }
+//                    }
+//                });
+//            }
+//
+//        }
 
         return rootView;
     }

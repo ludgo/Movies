@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.ludgo.android.movies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -38,13 +37,12 @@ public class PopularAdapter extends CursorAdapter {
 
         ImageView imageView = (ImageView) view;
 
-        int index = cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH);
-        String posterPath = cursor.getString(index);
+        String posterPath = cursor.getString(GridFragment.COL_POSTER_PATH);
         String posterUrl = Utility.createUrlFromEnding(posterPath);
 
         Picasso.with(context)
                 .load(posterUrl)
-                .resize(250,0)
+                .resize(250, 0)
                 .into(imageView);
     }
 }

@@ -9,10 +9,26 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
 
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String GRID_FRAGMENT_TAG = "GF_TAG";
+
+    // Rules how to order grid
+    private static String showRule;
+    private static String sortRule;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Load necessary rules
+        showRule = Utility.getShowRule(this);
+        sortRule = Utility.getSortRule(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new GridFragment(), GRID_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     @Override
@@ -35,5 +51,40 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String currentShowRule = Utility.getShowRule(this);
+        String currentSortRule = Utility.getSortRule(this);
+
+        if (showRule.equals(currentShowRule) && sortRule.equals(currentSortRule)) {
+            // nothing changed
+            return;
+        }
+
+        showRule = currentShowRule;
+        sortRule = currentSortRule;
+
+        // update the fragment layout using the fragment manager
+        GridFragment gridFragment = (GridFragment) getSupportFragmentManager()
+                .findFragmentByTag(GRID_FRAGMENT_TAG);
+        if (null != gridFragment) {
+            if (showRule.equals(
+                    this.getString(R.string.pref_show_entryValues_all)
+            )) {
+                gridFragment.fetchData();
+            }
+            gridFragment.updateGrid();
+        }
+    }
+
+    public static String getShowRule() {
+        return showRule;
+    }
+
+    public static String getSortRule() {
+        return sortRule;
     }
 }
