@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.ludgo.android.movies.data.MoviesContract;
+import com.ludgo.android.movies.service.MoviesService;
 
 
 /**
@@ -117,8 +118,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     // If settings have been changed since the activity was created, we need to fetch again
     void fetchData() {
         // Save movies details in database
-        FetchMoviesTask fetchMoviesTask = new FetchMoviesTask(getActivity());
-        fetchMoviesTask.execute(MainActivity.getSortRule());
+        Intent intent = new Intent(getActivity(), MoviesService.class);
+        getActivity().startService(intent);
     }
 
     // If settings have been changed since the activity was created, we need restart of grid
