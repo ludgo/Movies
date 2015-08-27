@@ -41,6 +41,7 @@
             android:exported="false"/>
         <service android:name=".service.MoviesService"/>
         <service android:name=".service.TrailersService"/>
+        <service android:name=".service.ReviewsService"/>
     </application>
 
 </manifest>

@@ -22,16 +22,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Get trailers data from JSON HTTP request
+ * Get reviews data from JSON HTTP request
  */
-public class TrailersService extends IntentService {
+public class ReviewsService extends IntentService {
 
-    private final String LOG_TAG = TrailersService.class.getSimpleName();
+    private final String LOG_TAG = ReviewsService.class.getSimpleName();
 
     private int movie_id;
 
-    public TrailersService() {
-        super("TrailersService");
+    public ReviewsService() {
+        super("ReviewsService");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class TrailersService extends IntentService {
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String videoApiString;
+        String reviewsApiString;
 
         String apiKey = Utility.API_KEY;
 
@@ -59,7 +59,7 @@ public class TrailersService extends IntentService {
             // Construct the URL for the themoviedb.org API query
             // documentation at http://docs.themoviedb.apiary.io
             final String API_BASE_URL =
-                    "http://api.themoviedb.org/3/movie/" + movie_id + "/videos?";
+                    "http://api.themoviedb.org/3/movie/" + movie_id + "/reviews?";
             final String KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
@@ -92,11 +92,11 @@ public class TrailersService extends IntentService {
                 // Stream was empty.  No point in parsing.
                 return;
             }
-            videoApiString = buffer.toString();
-            getVideoDataFromJson(videoApiString);
+            reviewsApiString = buffer.toString();
+            getReviewsDataFromJson(reviewsApiString);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the video data, there's no point in attempting
+            // If the code didn't successfully get the review data, there's no point in attempting
             // to parse it.
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -116,10 +116,10 @@ public class TrailersService extends IntentService {
     }
 
     /**
-     * Take the String representing the complete videos in JSON Format and
+     * Take the String representing the complete reviews in JSON Format and
      * pull out the data needed to construct the wireframes.
      */
-    private void getVideoDataFromJson(String videosJsonStr)
+    private void getReviewsDataFromJson(String reviewsJsonStr)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
@@ -127,62 +127,54 @@ public class TrailersService extends IntentService {
 
         // These are the names of goal values
         final String NAME_ID = "id";
-        final String NAME_NAME = "name";
-        final String NAME_KEY = "key";
-        // Only for checking purposes
-        final String NAME_SITE = "site";
+        final String NAME_AUTHOR = "author";
+        final String NAME_CONTENT = "content";
 
         try {
-            JSONObject videosJson = new JSONObject(videosJsonStr);
-            JSONArray resultsArray = videosJson.getJSONArray(NAME_RESULTS);
+            JSONObject reviewsJson = new JSONObject(reviewsJsonStr);
+            JSONArray resultsArray = reviewsJson.getJSONArray(NAME_RESULTS);
 
             for (int i = 0; i < resultsArray.length(); i++) {
 
-                // Get the JSON object representing one particular video
-                JSONObject aVideo = resultsArray.getJSONObject(i);
+                // Get the JSON object representing one particular review
+                JSONObject aReview = resultsArray.getJSONObject(i);
 
-                String site;
-                site = aVideo.getString(NAME_SITE);
+                // These are the values that will be collected for each review.
+                String reviewId;
+                String author;
+                String content;
 
-                if (site != null && site.equals("YouTube")) {
+                reviewId = aReview.getString(NAME_ID);
+                author = aReview.getString(NAME_AUTHOR);
+                content = aReview.getString(NAME_CONTENT);
 
-                    // These are the values that will be collected for each video.
-                    String videoId;
-                    String name;
-                    String key;
+                if (reviewId != null &&
+                        author != null &&
+                        content != null) {
 
-                    videoId = aVideo.getString(NAME_ID);
-                    name = aVideo.getString(NAME_NAME);
-                    key = aVideo.getString(NAME_KEY);
-
-                    if (videoId != null &&
-                            name != null &&
-                            key != null) {
-
-                        // First, check if the trailer with this id exists in the db
-                        Cursor checkCursor = this.getContentResolver().query(
-                                MoviesContract.TrailersEntry.buildTrailersUriWithId(movie_id),
-                                null,
-                                MoviesContract.TrailersEntry.COLUMN_TRAILER_ID + " = ?",
-                                new String[]{videoId},
-                                null);
-                        if (checkCursor.moveToFirst()) {
-                            checkCursor.close();
-                            break;
-                        }
+                    // First, check if the review with this id exists in the db
+                    Cursor checkCursor = this.getContentResolver().query(
+                            MoviesContract.ReviewsEntry.buildReviewsUriWithId(movie_id),
+                            null,
+                            MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID + " = ?",
+                            new String[]{reviewId},
+                            null);
+                    if (checkCursor.moveToFirst()) {
                         checkCursor.close();
-
-                        // Insert the video information into the database
-                        ContentValues videoValues = new ContentValues();
-
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_TRAILER_ID, videoId);
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, name);
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, key);
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY, movie_id);
-
-                        this.getContentResolver().insert(
-                                MoviesContract.TrailersEntry.CONTENT_URI, videoValues);
+                        break;
                     }
+                    checkCursor.close();
+
+                    // Insert the review information into the database
+                    ContentValues reviewValues = new ContentValues();
+
+                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID, reviewId);
+                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, author);
+                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, content);
+                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY, movie_id);
+
+                    this.getContentResolver().insert(
+                            MoviesContract.ReviewsEntry.CONTENT_URI, reviewValues);
                 }
             }
         } catch (JSONException e) {

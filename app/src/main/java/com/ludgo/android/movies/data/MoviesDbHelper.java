@@ -50,7 +50,10 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 // From oldest to newest
                 TrailersEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
-                TrailersEntry.COLUMN_TRAILER_ID + " TEXT NOT NULL, " +
+                // To assure the application has just one trailer entry per particular
+                // themoviedb.org API trailer id, it's created a UNIQUE constraint.
+                // Presumably, its parameters won't, change, so that no point in replacing.
+                TrailersEntry.COLUMN_TRAILER_ID + " TEXT UNIQUE NOT NULL, " +
                 TrailersEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_KEY + " TEXT NOT NULL, " +
                 TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY + " INTEGER NOT NULL, " +
@@ -59,18 +62,16 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 // with delete if the record in the parent table is deleted
                 "FOREIGN KEY (" + TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY + ") REFERENCES " +
                 MoviesEntry.TABLE_NAME + " (" + MoviesEntry.COLUMN_MOVIE_ID + ") " +
-                "ON DELETE CASCADE, " +
-
-                // To assure the application has just one trailer entry per particular
-                // themoviedb.org API trailer id, it's created a UNIQUE constraint.
-                // To assure always fresh data in case of change, REPLACE strategy was chosen.
-                "UNIQUE (" + TrailersEntry.COLUMN_TRAILER_ID + ") ON CONFLICT REPLACE);";
+                "ON DELETE CASCADE);";
 
         final String SQL_CREATE_REVIEWS_TABLE = "CREATE TABLE " + ReviewsEntry.TABLE_NAME + " (" +
 
                 // From oldest to newest
                 ReviewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
+                // To assure the application has just one review entry per particular
+                // themoviedb.org API review id, it's created a UNIQUE constraint.
+                // Presumably, its parameters won't, change, so that no point in replacing.
                 ReviewsEntry.COLUMN_REVIEW_ID + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_CONTENT + " TEXT NOT NULL, " +
@@ -80,12 +81,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 // with delete if the record in the parent table is deleted
                 "FOREIGN KEY (" + ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY + ") REFERENCES " +
                 MoviesEntry.TABLE_NAME + " (" + MoviesEntry.COLUMN_MOVIE_ID + ") " +
-                "ON DELETE CASCADE, " +
-
-                // To assure the application has just one review entry per particular
-                // themoviedb.org API review id, it's created a UNIQUE constraint.
-                // To assure always fresh data in case of edit by user, REPLACE strategy was chosen.
-                "UNIQUE (" + ReviewsEntry.COLUMN_REVIEW_ID + ") ON CONFLICT REPLACE);";
+                "ON DELETE CASCADE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TRAILERS_TABLE);

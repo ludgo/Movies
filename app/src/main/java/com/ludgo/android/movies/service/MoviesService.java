@@ -29,7 +29,7 @@ public class MoviesService extends IntentService {
     private final String LOG_TAG = MoviesService.class.getSimpleName();
 
     public MoviesService() {
-        super("Movies");
+        super("MoviesService");
     }
 
     @Override
@@ -115,7 +115,7 @@ public class MoviesService extends IntentService {
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
-        final String MOVIE_RESULTS = "results";
+        final String NAME_RESULTS = "results";
 
         // These are the names of goal values
         final String NAME_ID = "id";
@@ -128,7 +128,7 @@ public class MoviesService extends IntentService {
 
         try {
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
-            JSONArray resultsArray = moviesJson.getJSONArray(MOVIE_RESULTS);
+            JSONArray resultsArray = moviesJson.getJSONArray(NAME_RESULTS);
 
             for (int i = 0; i < resultsArray.length(); i++) {
 
@@ -152,24 +152,26 @@ public class MoviesService extends IntentService {
                 vote_average = aMovie.getDouble(NAME_VOTE_AVERAGE);
                 popularity = aMovie.getDouble(NAME_POPULARITY);
 
-                // First, check if the movie with this id exists in the db
-                Cursor checkCursor = this.getContentResolver().query(
-                        MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id),
-                        null,
-                        null,
-                        null,
-                        null);
-
-                if (checkCursor.moveToFirst()) {
-                    checkCursor.close();
-                    break;
-                }
-                checkCursor.close();
-
-                if (title != null &&
+                if (movie_id != 0 &&
+                        title != null &&
                         overview != null &&
                         poster_path != null &&
-                        release_date != null) {
+                        release_date != null &&
+                        vote_average != 0.0d &&
+                        popularity != 0.0d) {
+
+                    // First, check if the movie with this id exists in the db
+                    Cursor checkCursor = this.getContentResolver().query(
+                            MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id),
+                            null,
+                            null,
+                            null,
+                            null);
+                    if (checkCursor.moveToFirst()) {
+                        checkCursor.close();
+                        break;
+                    }
+                    checkCursor.close();
 
                     // Insert the movie information into the database
                     ContentValues movieValues = new ContentValues();
@@ -182,7 +184,7 @@ public class MoviesService extends IntentService {
                     movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
                     movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
 
-                    Uri returnedUri = this.getContentResolver().insert(
+                    this.getContentResolver().insert(
                             MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
                 }
             }

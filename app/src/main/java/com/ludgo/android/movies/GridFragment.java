@@ -29,7 +29,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     private final String LOG_TAG = GridFragment.class.getSimpleName();
 
     // Set id for each loader
-    private static final int GRID_LOADER = 0;
+    private static final int GRID_LOADER = 10;
 
     // Indices tied to GRID_LOADER CursorLoader projection to map column index in Cursor
     // Carefully consider any changes!
@@ -129,7 +129,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 
         // By which column to sort
         String sortColumn = null;
