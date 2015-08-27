@@ -22,11 +22,11 @@ public class MoviesProvider extends ContentProvider {
     private static final int REVIEWS = 300;
     private static final int REVIEWS_ONE = 301;
 
-    // Must find combined tables
+    // Find combined tables
     private static final SQLiteQueryBuilder movieTrailersQueryBuilder;
-    private static final SQLiteQueryBuilder movieReviewsQueryBuilder;
+//    private static final SQLiteQueryBuilder movieReviewsQueryBuilder;
 
-    static{
+    static {
         movieTrailersQueryBuilder = new SQLiteQueryBuilder();
         // This is a inner join which looks like:
         // movies INNER JOIN trailers ON movies.movies_id = trailers.movie_id_trailers_key
@@ -39,17 +39,17 @@ public class MoviesProvider extends ContentProvider {
                         " = " + MoviesContract.TrailersEntry.TABLE_NAME +
                         "." + MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY);
 
-        movieReviewsQueryBuilder = new SQLiteQueryBuilder();
-        // This is a inner join which looks like:
-        // movies INNER JOIN reviews ON movies.movies_id = reviews.movie_id_reviews_key
-        movieReviewsQueryBuilder.setTables(
-                MoviesContract.MoviesEntry.TABLE_NAME +
-                        // All reviews for one particular movie
-                        " INNER JOIN " + MoviesContract.TrailersEntry.TABLE_NAME +
-                        " ON " + MoviesContract.MoviesEntry.TABLE_NAME +
-                        "." + MoviesContract.MoviesEntry.COLUMN_MOVIE_ID +
-                        " = " + MoviesContract.ReviewsEntry.TABLE_NAME +
-                        "." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY);
+//        movieReviewsQueryBuilder = new SQLiteQueryBuilder();
+//        // This is a inner join which looks like:
+//        // movies INNER JOIN reviews ON movies.movies_id = reviews.movie_id_reviews_key
+//        movieReviewsQueryBuilder.setTables(
+//                MoviesContract.MoviesEntry.TABLE_NAME +
+//                        // All reviews for one particular movie
+//                        " INNER JOIN " + MoviesContract.TrailersEntry.TABLE_NAME +
+//                        " ON " + MoviesContract.MoviesEntry.TABLE_NAME +
+//                        "." + MoviesContract.MoviesEntry.COLUMN_MOVIE_ID +
+//                        " = " + MoviesContract.ReviewsEntry.TABLE_NAME +
+//                        "." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY);
     }
 
     /*
@@ -73,7 +73,7 @@ public class MoviesProvider extends ContentProvider {
     }
 
     /*
-        Create a new WeatherDbHelper for later use
+        Create a new MoviesDbHelper for later use
      */
     @Override
     public boolean onCreate() {
@@ -171,32 +171,32 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
-//            // "reviews"
-//            case REVIEWS: {
-//                retCursor = mOpenHelper.getReadableDatabase().query(
-//                        MoviesContract.ReviewsEntry.TABLE_NAME,
-//                        projection,
-//                        selection,
-//                        selectionArgs,
-//                        null,
-//                        null,
-//                        sortOrder
-//                );
-//                break;
-//            }
-            // "reviews/#"
-            case REVIEWS_ONE: {
-                String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
-                retCursor = movieReviewsQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+            // "reviews"
+            case REVIEWS: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.ReviewsEntry.TABLE_NAME,
                         projection,
-                        MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " = ?",
-                        new String[]{movieIdStr},
+                        selection,
+                        selectionArgs,
                         null,
                         null,
                         sortOrder
                 );
                 break;
             }
+//            // "reviews/#"
+//            case REVIEWS_ONE: {
+//                String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
+//                retCursor = movieReviewsQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+//                        projection,
+//                        MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " = ?",
+//                        new String[]{movieIdStr},
+//                        null,
+//                        null,
+//                        sortOrder
+//                );
+//                break;
+//            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -237,7 +237,7 @@ public class MoviesProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        // Notifying the root Uri will notify all descendants
+        // Notifying the root Uri will also notify all descendants
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
@@ -247,8 +247,9 @@ public class MoviesProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
-        // this makes delete all rows return the number of rows deleted
-        if (null == selection) selection = "1";
+        // null would delete all rows
+        if (selection == null) selection = "1";
+        // "1" will delete all rows and return count
         switch (match) {
             case MOVIES:
                 // Will cause also cascading delete from trailers and reviews tables
@@ -273,18 +274,26 @@ public class MoviesProvider extends ContentProvider {
         int rowsUpdated;
 
         switch (match) {
-            case MOVIES:
-                rowsUpdated = db.update(MoviesContract.MoviesEntry.TABLE_NAME, values, selection,
-                        selectionArgs);
+//            case MOVIES:
+//                rowsUpdated = db.update(MoviesContract.MoviesEntry.TABLE_NAME, values, selection,
+//                        selectionArgs);
+//                break;
+            case MOVIES_ONE:
+                String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
+                rowsUpdated = db.update(MoviesContract.MoviesEntry.TABLE_NAME,
+                        values,
+                        MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " = ?",
+                        new String[]{movieIdStr}
+                );
                 break;
-            case TRAILERS:
-                rowsUpdated = db.update(MoviesContract.TrailersEntry.TABLE_NAME, values, selection,
-                        selectionArgs);
-                break;
-            case REVIEWS:
-                rowsUpdated = db.update(MoviesContract.ReviewsEntry.TABLE_NAME, values, selection,
-                        selectionArgs);
-                break;
+//            case TRAILERS:
+//                rowsUpdated = db.update(MoviesContract.TrailersEntry.TABLE_NAME, values, selection,
+//                        selectionArgs);
+//                break;
+//            case REVIEWS:
+//                rowsUpdated = db.update(MoviesContract.ReviewsEntry.TABLE_NAME, values, selection,
+//                        selectionArgs);
+//                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

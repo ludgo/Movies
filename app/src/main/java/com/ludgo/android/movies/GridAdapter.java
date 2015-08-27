@@ -11,12 +11,12 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 /**
- * {@link PopularAdapter} exposes a list of weather forecasts
- * from a {@link android.database.Cursor} to a {@link android.widget.GridView}.
+ * {@link GridAdapter} exposes a grid of movie posters from
+ * a {@link android.database.Cursor} to a {@link android.widget.GridView}.
  */
-public class PopularAdapter extends CursorAdapter {
+public class GridAdapter extends CursorAdapter {
 
-    public PopularAdapter(Context context, Cursor c, int flags) {
+    public GridAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 

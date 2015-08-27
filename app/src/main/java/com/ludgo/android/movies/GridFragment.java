@@ -31,12 +31,12 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     // Set id for each loader
     private static final int GRID_LOADER = 0;
 
-    PopularAdapter mPopularAdapter;
-
     // Indices tied to GRID_LOADER CursorLoader projection to map column index in Cursor
     // Carefully consider any changes!
     static final int COL_MOVIE_ID = 1;
     static final int COL_POSTER_PATH = 2;
+
+    GridAdapter mGridAdapter;
 
     public GridFragment() {
     }
@@ -82,8 +82,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         // Set adapter with empty cursor
         // Note: CursorLoader will automatically initiate Cursor and register ContentObserver
         // on it, that is why no flags needed
-        mPopularAdapter = new PopularAdapter(getActivity(), null, 0);
-        gridView.setAdapter(mPopularAdapter);
+        mGridAdapter = new GridAdapter(getActivity(), null, 0);
+        gridView.setAdapter(mGridAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -93,7 +93,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 if (cursor != null) {
                     int movie_id = cursor.getInt(COL_MOVIE_ID);
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra("movie_id", movie_id);
+                            .setData(MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id));
                     startActivity(intent);
                 }
             }
@@ -111,20 +111,20 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onStart() {
         super.onStart();
-        fetchData();
+        fetchMovies();
         updateGrid();
     }
 
     // If settings have been changed since the activity was created, we need to fetch again
-    void fetchData() {
+    void fetchMovies() {
         // Save movies details in database
         Intent intent = new Intent(getActivity(), MoviesService.class);
         getActivity().startService(intent);
     }
 
-    // If settings have been changed since the activity was created, we need restart of grid
+    // If settings have been changed since the activity was created, we need to update the grid
     void updateGrid() {
-        // Display movie posters correspondingly
+        // Display movies posters correspondingly
         getLoaderManager().restartLoader(GRID_LOADER, null, this);
     }
 
@@ -166,11 +166,11 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        mPopularAdapter.swapCursor(cursor);
+        mGridAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        mPopularAdapter.swapCursor(null);
+        mGridAdapter.swapCursor(null);
     }
 }

@@ -28,9 +28,14 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
 
-                MoviesEntry._ID + " INTEGER PRIMARY KEY," +
+                // _ID constraints are not required directly when constructing these tables,
+                // but necessary in case a table will be used with CursorAdapter
+                MoviesEntry._ID + " INTEGER PRIMARY KEY, " +
 
-                MoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
+                // To assure the application has just one movie entry per particular
+                // themoviedb.org API movie id, it's created a UNIQUE constraint.
+                // To maintain favorites, we CANNOT replace movies by insert again and again.
+                MoviesEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
                 MoviesEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MoviesEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 MoviesEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
@@ -38,12 +43,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
                 MoviesEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
                 // 1 for favorite, 0 default
-                MoviesEntry.COLUMN_FAVORITE + " INTEGER NOT NULL DEFAULT 0, " +
-
-                // To assure the application has just one movie entry per particular
-                // themoviedb.org API movie id, it's created a UNIQUE constraint.
-                // To maintain favorites, we CANNOT replace movies again and again.
-                "UNIQUE (" + MoviesEntry.COLUMN_MOVIE_ID + ") ON CONFLICT IGNORE);";
+                MoviesEntry.COLUMN_FAVORITE + " INTEGER NOT NULL DEFAULT 0);";
 
         final String SQL_CREATE_TRAILERS_TABLE = "CREATE TABLE " + TrailersEntry.TABLE_NAME + " (" +
 
@@ -56,20 +56,20 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY + " INTEGER NOT NULL, " +
 
                 // Set up the movie id column as a foreign key to movies table,
-                // with delete if the record in parent table is deleted
+                // with delete if the record in the parent table is deleted
                 "FOREIGN KEY (" + TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY + ") REFERENCES " +
                 MoviesEntry.TABLE_NAME + " (" + MoviesEntry.COLUMN_MOVIE_ID + ") " +
                 "ON DELETE CASCADE, " +
 
                 // To assure the application has just one trailer entry per particular
                 // themoviedb.org API trailer id, it's created a UNIQUE constraint.
-                // Presumably, specifications won't change, so that there is no point in replacing.
-                "UNIQUE (" + TrailersEntry.COLUMN_TRAILER_ID + ") ON CONFLICT IGNORE);";
+                // To assure always fresh data in case of change, REPLACE strategy was chosen.
+                "UNIQUE (" + TrailersEntry.COLUMN_TRAILER_ID + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_REVIEWS_TABLE = "CREATE TABLE " + ReviewsEntry.TABLE_NAME + " (" +
 
                 // From oldest to newest
-                ReviewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ReviewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
                 ReviewsEntry.COLUMN_REVIEW_ID + " TEXT NOT NULL, " +
                 ReviewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
@@ -77,7 +77,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY + " INTEGER NOT NULL, " +
 
                 // Set up the movie id column as a foreign key to movies table,
-                // with delete if the record in parent table is deleted
+                // with delete if the record in the parent table is deleted
                 "FOREIGN KEY (" + ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY + ") REFERENCES " +
                 MoviesEntry.TABLE_NAME + " (" + MoviesEntry.COLUMN_MOVIE_ID + ") " +
                 "ON DELETE CASCADE, " +

@@ -74,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
             if (showRule.equals(
                     this.getString(R.string.pref_show_entryValues_all)
             )) {
-                gridFragment.fetchData();
+                gridFragment.fetchMovies();
             }
             gridFragment.updateGrid();
         }

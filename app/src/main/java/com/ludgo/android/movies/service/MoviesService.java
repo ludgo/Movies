@@ -3,6 +3,7 @@ package com.ludgo.android.movies.service;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -89,7 +90,6 @@ public class MoviesService extends IntentService {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the movie data, there's no point in attempting
             // to parse it.
-            return;
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -117,11 +117,24 @@ public class MoviesService extends IntentService {
         // These are the names of the JSON objects that need to be extracted.
         final String MOVIE_RESULTS = "results";
 
+        // These are the names of goal values
+        final String NAME_ID = "id";
+        final String NAME_TITLE = "title";
+        final String NAME_OVERVIEW = "overview";
+        final String NAME_POSTER_PATH = "poster_path";
+        final String NAME_RELEASE_DATE = "release_date";
+        final String NAME_VOTE_AVERAGE = "vote_average";
+        final String NAME_POPULARITY = "popularity";
+
         try {
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
             JSONArray resultsArray = moviesJson.getJSONArray(MOVIE_RESULTS);
 
             for (int i = 0; i < resultsArray.length(); i++) {
+
+                // Get the JSON object representing one particular movie
+                JSONObject aMovie = resultsArray.getJSONObject(i);
+
                 // These are the values that will be collected for each movie.
                 int movie_id;
                 String title;
@@ -131,18 +144,6 @@ public class MoviesService extends IntentService {
                 double vote_average;
                 double popularity;
 
-                // Get the JSON object representing one particular movie
-                JSONObject aMovie = resultsArray.getJSONObject(i);
-
-                // These are the names of goal values
-                final String NAME_ID = "id";
-                final String NAME_TITLE = "title";
-                final String NAME_OVERVIEW = "overview";
-                final String NAME_POSTER_PATH = "poster_path";
-                final String NAME_RELEASE_DATE = "release_date";
-                final String NAME_VOTE_AVERAGE = "vote_average";
-                final String NAME_POPULARITY = "popularity";
-
                 movie_id = aMovie.getInt(NAME_ID);
                 title = aMovie.getString(NAME_TITLE);
                 overview = aMovie.getString(NAME_OVERVIEW);
@@ -151,19 +152,39 @@ public class MoviesService extends IntentService {
                 vote_average = aMovie.getDouble(NAME_VOTE_AVERAGE);
                 popularity = aMovie.getDouble(NAME_POPULARITY);
 
-                // Insert the movie information into the database
-                ContentValues movieValues = new ContentValues();
+                // First, check if the movie with this id exists in the db
+                Cursor checkCursor = this.getContentResolver().query(
+                        MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id),
+                        null,
+                        null,
+                        null,
+                        null);
 
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
-                movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
+                if (checkCursor.moveToFirst()) {
+                    checkCursor.close();
+                    break;
+                }
+                checkCursor.close();
 
-                Uri returnedUri = this.getContentResolver().insert(
-                        MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
+                if (title != null &&
+                        overview != null &&
+                        poster_path != null &&
+                        release_date != null) {
+
+                    // Insert the movie information into the database
+                    ContentValues movieValues = new ContentValues();
+
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
+
+                    Uri returnedUri = this.getContentResolver().insert(
+                            MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
+                }
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
