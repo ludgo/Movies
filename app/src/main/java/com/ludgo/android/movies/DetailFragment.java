@@ -6,14 +6,20 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,12 +47,47 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     // Inflater that will inflate text views to append
     LayoutInflater mInflater;
 
-    Button favoriteButton;
+    private static TextView titleTextView;
+    private static TextView yearTextView;
+    private Button favoriteButton;
     // here is reference to views where text views will be appended
     private LinearLayout trailersLinearLayout;
     private LinearLayout reviewsLinearLayout;
 
     public DetailFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_fragment_detail, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        // Get the provider and hold onto it to set/change the share intent
+        ShareActionProvider mShareActionProvider =
+                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        // Attach an intent to this ShareActionProvider
+        if (mShareActionProvider != null ) {
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
+    }
+
+    private static Intent createShareIntent(){
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        String title = (String) titleTextView.getText();
+        String year = (String) yearTextView.getText();
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                "Hi! Check out the movie " + title + " (" + year +
+                        "). My opinion is " + "/10. #Movies app");
+        return shareIntent;
     }
 
     @Override
@@ -57,9 +98,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        TextView titleTextView = (TextView) rootView.findViewById(R.id.title);
+        titleTextView = (TextView) rootView.findViewById(R.id.title);
         ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
-        TextView yearTextView = (TextView) rootView.findViewById(R.id.year);
+        yearTextView = (TextView) rootView.findViewById(R.id.year);
         TextView voteAverageTextView = (TextView) rootView.findViewById(R.id.voteAverage);
         favoriteButton = (Button) rootView.findViewById(R.id.favorite);
         TextView overviewTextView = (TextView) rootView.findViewById(R.id.overview);
@@ -211,10 +252,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     // append all movie trailers to linear layout
                     do {
                         String trailerName = cursor.getString(1);
-                        String trailerKey = cursor.getString(2);
+                        final String trailerKey = cursor.getString(2);
                         TextView trailerTextView = (TextView) mInflater
                                 .inflate(R.layout.trailer_item, null);
                         trailerTextView.setText(trailerName);
+                        trailerTextView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String trailerUrl = Utility.createYoutubeUrlFromKey(trailerKey);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailerUrl));
+                                startActivity(intent);
+                            }
+                        });
                         trailersLinearLayout.addView(trailerTextView);
                     } while (cursor.moveToNext());
                     break;

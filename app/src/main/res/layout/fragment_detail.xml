@@ -111,7 +111,7 @@
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:paddingTop="8dp"
-            android:text="@string/trailers"
+            android:text="@string/view_trailers"
             android:textColor="@color/grey_600"
             android:textSize="18sp" />
 
@@ -134,7 +134,7 @@
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:paddingTop="8dp"
-            android:text="@string/reviews"
+            android:text="@string/view_reviews"
             android:textColor="@color/grey_600"
             android:textSize="18sp" />
 
