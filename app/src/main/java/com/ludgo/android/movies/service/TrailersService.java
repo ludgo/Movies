@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 /**
  * Get trailers data from JSON HTTP request
@@ -136,6 +137,9 @@ public class TrailersService extends IntentService {
             JSONObject videosJson = new JSONObject(videosJsonStr);
             JSONArray resultsArray = videosJson.getJSONArray(NAME_RESULTS);
 
+            // Collect new information
+            Vector<ContentValues> contentValuesVector = new Vector<ContentValues>(resultsArray.length());
+
             for (int i = 0; i < resultsArray.length(); i++) {
 
                 // Get the JSON object representing one particular video
@@ -167,7 +171,7 @@ public class TrailersService extends IntentService {
                                 null,
                                 null);
                         if (!checkCursor.moveToFirst()) {
-                            // Insert the video information into the database
+                            // A new row
                             ContentValues videoValues = new ContentValues();
 
                             videoValues.put(MoviesContract.TrailersEntry.COLUMN_TRAILER_ID, videoId);
@@ -175,12 +179,19 @@ public class TrailersService extends IntentService {
                             videoValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, key);
                             videoValues.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY, movie_id);
 
-                            this.getContentResolver().insert(
-                                    MoviesContract.TrailersEntry.CONTENT_URI, videoValues);
+                            contentValuesVector.add(videoValues);
                         }
                         checkCursor.close();
                     }
                 }
+            }
+
+            // Insert new information into the database
+            if ( contentValuesVector.size() > 0 ) {
+                ContentValues[] rowsArray = new ContentValues[contentValuesVector.size()];
+                contentValuesVector.toArray(rowsArray);
+                this.getContentResolver()
+                        .bulkInsert(MoviesContract.TrailersEntry.CONTENT_URI, rowsArray);
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

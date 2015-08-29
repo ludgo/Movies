@@ -1,6 +1,9 @@
 package com.ludgo.android.movies;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -153,11 +156,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     void fetchReviews() {
-        // Save reviews for this movie in database
-        Intent intent = new Intent(getActivity(), ReviewsService.class)
+        // Save reviews for this movie in database after some time
+        Intent fetchIntent = new Intent(getActivity(), ReviewsService.FetchReceiver.class)
                 .setData(MoviesContract.MoviesEntry
                         .buildMoviesUriWithId(DetailActivity.getMovieId()));
-        getActivity().startService(intent);
+        // Pending intent instead of regular to achieve better performance
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, fetchIntent,
+                PendingIntent.FLAG_ONE_SHOT);
+        //Set the AlarmManager to wake up the system.
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pendingIntent);
     }
 
     @Override

@@ -24,7 +24,7 @@
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
@@ -32,16 +32,16 @@
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <provider
             android:authorities="com.ludgo.android.movies"
             android:name=".data.MoviesProvider"
-            android:enabled="true"
             android:exported="false"/>
         <service android:name=".service.MoviesService"/>
         <service android:name=".service.TrailersService"/>
         <service android:name=".service.ReviewsService"/>
+        <receiver android:name=".service.ReviewsService$FetchReceiver"/>
     </application>
 
 </manifest>

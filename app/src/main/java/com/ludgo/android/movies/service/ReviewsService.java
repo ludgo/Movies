@@ -1,7 +1,9 @@
 package com.ludgo.android.movies.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -20,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 /**
  * Get reviews data from JSON HTTP request
@@ -134,6 +137,9 @@ public class ReviewsService extends IntentService {
             JSONObject reviewsJson = new JSONObject(reviewsJsonStr);
             JSONArray resultsArray = reviewsJson.getJSONArray(NAME_RESULTS);
 
+            // Collect new information
+            Vector<ContentValues> contentValuesVector = new Vector<ContentValues>(resultsArray.length());
+
             for (int i = 0; i < resultsArray.length(); i++) {
 
                 // Get the JSON object representing one particular review
@@ -160,7 +166,7 @@ public class ReviewsService extends IntentService {
                             null,
                             null);
                     if (!checkCursor.moveToFirst()) {
-                        // Insert the review information into the database
+                        // A new row
                         ContentValues reviewValues = new ContentValues();
 
                         reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID, reviewId);
@@ -168,15 +174,36 @@ public class ReviewsService extends IntentService {
                         reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, content);
                         reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY, movie_id);
 
-                        this.getContentResolver().insert(
-                                MoviesContract.ReviewsEntry.CONTENT_URI, reviewValues);
+                        contentValuesVector.add(reviewValues);
                     }
                     checkCursor.close();
                 }
             }
+
+            // Insert new information into the database
+            if ( contentValuesVector.size() > 0 ) {
+                ContentValues[] rowsArray = new ContentValues[contentValuesVector.size()];
+                contentValuesVector.toArray(rowsArray);
+                this.getContentResolver()
+                        .bulkInsert(MoviesContract.ReviewsEntry.CONTENT_URI, rowsArray);
+            }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+        }
+    }
+
+    public static class FetchReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent != null) {
+                // Launch this service
+                Intent fetchIntent = new Intent(context, ReviewsService.class)
+                        .setData(intent.getData());;
+                context.startService(fetchIntent);
+            }
         }
     }
 }

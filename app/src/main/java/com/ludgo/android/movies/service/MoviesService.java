@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 /**
  * Get movies data from JSON HTTP request
@@ -130,6 +131,9 @@ public class MoviesService extends IntentService {
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
             JSONArray resultsArray = moviesJson.getJSONArray(NAME_RESULTS);
 
+            // Collect new information
+            Vector<ContentValues> contentValuesVector = new Vector<ContentValues>(resultsArray.length());
+
             for (int i = 0; i < resultsArray.length(); i++) {
 
                 // Get the JSON object representing one particular movie
@@ -167,26 +171,30 @@ public class MoviesService extends IntentService {
                             null,
                             null,
                             null);
-                    if (checkCursor.moveToFirst()) {
-                        checkCursor.close();
-                        break;
+                    if (!checkCursor.moveToFirst()) {
+                        // A new row
+                        ContentValues movieValues = new ContentValues();
+
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
+                        movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
+
+                        contentValuesVector.add(movieValues);
                     }
                     checkCursor.close();
-
-                    // Insert the movie information into the database
-                    ContentValues movieValues = new ContentValues();
-
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movie_id);
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, title);
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, overview);
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, poster_path);
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, release_date);
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, vote_average);
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, popularity);
-
-                    this.getContentResolver().insert(
-                            MoviesContract.MoviesEntry.CONTENT_URI, movieValues);
                 }
+            }
+
+            // Insert new information into the database
+            if ( contentValuesVector.size() > 0 ) {
+                ContentValues[] rowsArray = new ContentValues[contentValuesVector.size()];
+                contentValuesVector.toArray(rowsArray);
+                this.getContentResolver()
+                        .bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, rowsArray);
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
