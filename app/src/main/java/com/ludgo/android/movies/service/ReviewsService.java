@@ -154,27 +154,24 @@ public class ReviewsService extends IntentService {
 
                     // First, check if the review with this id exists in the db
                     Cursor checkCursor = this.getContentResolver().query(
-                            MoviesContract.ReviewsEntry.buildReviewsUriWithId(movie_id),
+                            MoviesContract.ReviewsEntry.buildOneReviewUri(movie_id, reviewId),
                             null,
-                            MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID + " = ?",
-                            new String[]{reviewId},
+                            null,
+                            null,
                             null);
-                    if (checkCursor.moveToFirst()) {
-                        checkCursor.close();
-                        break;
+                    if (!checkCursor.moveToFirst()) {
+                        // Insert the review information into the database
+                        ContentValues reviewValues = new ContentValues();
+
+                        reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID, reviewId);
+                        reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, author);
+                        reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, content);
+                        reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY, movie_id);
+
+                        this.getContentResolver().insert(
+                                MoviesContract.ReviewsEntry.CONTENT_URI, reviewValues);
                     }
                     checkCursor.close();
-
-                    // Insert the review information into the database
-                    ContentValues reviewValues = new ContentValues();
-
-                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID, reviewId);
-                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_AUTHOR, author);
-                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_CONTENT, content);
-                    reviewValues.put(MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY, movie_id);
-
-                    this.getContentResolver().insert(
-                            MoviesContract.ReviewsEntry.CONTENT_URI, reviewValues);
                 }
             }
         } catch (JSONException e) {

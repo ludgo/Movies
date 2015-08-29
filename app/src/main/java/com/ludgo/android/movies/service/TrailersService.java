@@ -161,27 +161,24 @@ public class TrailersService extends IntentService {
 
                         // First, check if the trailer with this id exists in the db
                         Cursor checkCursor = this.getContentResolver().query(
-                                MoviesContract.TrailersEntry.buildTrailersUriWithId(movie_id),
+                                MoviesContract.TrailersEntry.buildOneTrailerUri(movie_id, videoId),
                                 null,
-                                MoviesContract.TrailersEntry.COLUMN_TRAILER_ID + " = ?",
-                                new String[]{videoId},
+                                null,
+                                null,
                                 null);
-                        if (checkCursor.moveToFirst()) {
-                            checkCursor.close();
-                            break;
+                        if (!checkCursor.moveToFirst()) {
+                            // Insert the video information into the database
+                            ContentValues videoValues = new ContentValues();
+
+                            videoValues.put(MoviesContract.TrailersEntry.COLUMN_TRAILER_ID, videoId);
+                            videoValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, name);
+                            videoValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, key);
+                            videoValues.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY, movie_id);
+
+                            this.getContentResolver().insert(
+                                    MoviesContract.TrailersEntry.CONTENT_URI, videoValues);
                         }
                         checkCursor.close();
-
-                        // Insert the video information into the database
-                        ContentValues videoValues = new ContentValues();
-
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_TRAILER_ID, videoId);
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_NAME, name);
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_KEY, key);
-                        videoValues.put(MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY, movie_id);
-
-                        this.getContentResolver().insert(
-                                MoviesContract.TrailersEntry.CONTENT_URI, videoValues);
                     }
                 }
             }

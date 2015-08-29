@@ -17,9 +17,11 @@ public class MoviesProvider extends ContentProvider {
     private static final int MOVIES = 100;
     private static final int MOVIES_ONE = 101;
     private static final int TRAILERS = 200;
-    private static final int TRAILERS_ONE = 201;
+    private static final int TRAILERS_MOVIE = 201;
+    private static final int TRAILERS_MOVIE_ONE = 202;
     private static final int REVIEWS = 300;
-    private static final int REVIEWS_ONE = 301;
+    private static final int REVIEWS_MOVIE = 301;
+    private static final int REVIEWS_MOVIE_ONE = 302;
 
 //    // Find combined tables
 //    private static final SQLiteQueryBuilder movieTrailersQueryBuilder;
@@ -65,9 +67,11 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
         matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/#", MOVIES_ONE);
         matcher.addURI(authority, MoviesContract.PATH_TRAILERS, TRAILERS);
-        matcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS_ONE);
+        matcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#", TRAILERS_MOVIE);
+        matcher.addURI(authority, MoviesContract.PATH_TRAILERS + "/#/*", TRAILERS_MOVIE_ONE);
         matcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
-        matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/#", REVIEWS_ONE);
+        matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/#", REVIEWS_MOVIE);
+        matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/#/*", REVIEWS_MOVIE_ONE);
         return matcher;
     }
 
@@ -97,14 +101,20 @@ public class MoviesProvider extends ContentProvider {
             case TRAILERS:
                 return MoviesContract.TrailersEntry.CONTENT_TYPE;
             // 'DIR' (possibly zero or one row)
-            case TRAILERS_ONE:
+            case TRAILERS_MOVIE:
                 return MoviesContract.TrailersEntry.CONTENT_TYPE;
+            // 'ITEM' (or empty)
+            case TRAILERS_MOVIE_ONE:
+                return MoviesContract.TrailersEntry.CONTENT_ITEM_TYPE;
             // 'DIR'
             case REVIEWS:
                 return MoviesContract.ReviewsEntry.CONTENT_TYPE;
             // 'DIR' (possibly zero or one row)
-            case REVIEWS_ONE:
+            case REVIEWS_MOVIE:
                 return MoviesContract.ReviewsEntry.CONTENT_TYPE;
+            // 'ITEM' (or empty)
+            case REVIEWS_MOVIE_ONE:
+                return MoviesContract.ReviewsEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -158,13 +168,29 @@ public class MoviesProvider extends ContentProvider {
 //                break;
 //            }
             // "trailers/#" - all trailers belonging to the particular movie
-            case TRAILERS_ONE: {
+            case TRAILERS_MOVIE: {
                 String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.TrailersEntry.TABLE_NAME,
                         projection,
                         MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY + " = ?",
                         new String[]{movieIdStr},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            // "trailers/#/*" - single trailer
+            case TRAILERS_MOVIE_ONE: {
+                String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
+                String trailerId = MoviesContract.getFeatureIdFromUri(uri);
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.TrailersEntry.TABLE_NAME,
+                        projection,
+                        MoviesContract.TrailersEntry.COLUMN_MOVIE_ID_TRAILERS_KEY + " = ? AND " +
+                                MoviesContract.TrailersEntry.COLUMN_TRAILER_ID + " = ?",
+                        new String[]{movieIdStr, trailerId},
                         null,
                         null,
                         sortOrder
@@ -185,13 +211,29 @@ public class MoviesProvider extends ContentProvider {
 //                break;
 //            }
             // "reviews/#" - all reviews belonging to the particular movie
-            case REVIEWS_ONE: {
+            case REVIEWS_MOVIE: {
                 String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         MoviesContract.ReviewsEntry.TABLE_NAME,
                         projection,
                         MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY + " = ?",
                         new String[]{movieIdStr},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            // "reviews/#/*" - single review
+            case REVIEWS_MOVIE_ONE: {
+                String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
+                String reviewId = MoviesContract.getFeatureIdFromUri(uri);
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.ReviewsEntry.TABLE_NAME,
+                        projection,
+                        MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID_REVIEWS_KEY + " = ? AND " +
+                                MoviesContract.ReviewsEntry.COLUMN_REVIEW_ID + " = ?",
+                        new String[]{movieIdStr, reviewId},
                         null,
                         null,
                         sortOrder

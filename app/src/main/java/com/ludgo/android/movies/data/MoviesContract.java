@@ -103,6 +103,11 @@ public final class MoviesContract {
             String movieIdStr = Integer.toString(movieId);
             return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
         }
+
+        public static Uri buildOneTrailerUri(int movieId, String trailerId) {
+            String movieIdStr = Integer.toString(movieId);
+            return CONTENT_URI.buildUpon().appendPath(movieIdStr).appendPath(trailerId).build();
+        }
     }
 
     public static final class ReviewsEntry implements BaseColumns {
@@ -137,6 +142,11 @@ public final class MoviesContract {
             String movieIdStr = Integer.toString(movieId);
             return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
         }
+
+        public static Uri buildOneReviewUri(int movieId, String reviewId) {
+            String movieIdStr = Integer.toString(movieId);
+            return CONTENT_URI.buildUpon().appendPath(movieIdStr).appendPath(reviewId).build();
+        }
     }
 
     /**
@@ -144,5 +154,12 @@ public final class MoviesContract {
      */
     public static String getMovieIdStrFromUri(Uri uri) {
         return uri.getPathSegments().get(1);
+    }
+
+    /**
+     * @return either trailer id or review id got from the last segment of Uri
+     */
+    public static String getFeatureIdFromUri(Uri uri) {
+        return uri.getPathSegments().get(2);
     }
 }
