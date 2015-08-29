@@ -95,9 +95,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             // set poster
             final String posterPath = cursor.getString(3);
-            String posterUrl = Utility.createUrlFromEnding(posterPath);
             Picasso.with(getActivity())
-                    .load(posterUrl)
+                    .load("http://image.tmdb.org/t/p/w342" + posterPath)
                     .into(posterImageView);
 
             // set year
@@ -107,7 +106,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             // set vote average
             final double voteAverage = cursor.getDouble(5);
-            voteAverageTextView.setText(Double.toString(voteAverage));
+            voteAverageTextView.setText(Double.toString(voteAverage) + "/10");
 
             // allow user to mark movie as favorite
             int favorite = cursor.getInt(6);

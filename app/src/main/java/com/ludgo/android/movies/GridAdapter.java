@@ -3,6 +3,7 @@ package com.ludgo.android.movies;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,11 @@ import com.squareup.picasso.Picasso;
  */
 public class GridAdapter extends CursorAdapter {
 
-    public GridAdapter(Context context, Cursor c, int flags) {
+    private int widthInPx;
+
+    public GridAdapter(Context context, Cursor c, int flags, int itemWidth) {
         super(context, c, flags);
+        widthInPx = itemWidth;
     }
 
     /*
@@ -35,14 +39,11 @@ public class GridAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        ImageView imageView = (ImageView) view;
-
         String posterPath = cursor.getString(GridFragment.COL_POSTER_PATH);
-        String posterUrl = Utility.createUrlFromEnding(posterPath);
-
+        String posterUrl = Utility.createPosterUrl(posterPath, widthInPx);
         Picasso.with(context)
                 .load(posterUrl)
-                .resize(250, 0)
-                .into(imageView);
+                .resize(widthInPx, 0)
+                .into((ImageView) view);
     }
 }

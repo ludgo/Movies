@@ -1,13 +1,14 @@
 package com.ludgo.android.movies;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,20 +70,28 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         // Find grid view
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
-        // Choose grid style
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // 2 columns when portrait orientation
-            gridView.setNumColumns(2);
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // 3 columns when landscape orientation
-            gridView.setNumColumns(3);
+
+        // Get width of the actual screen
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+
+        // Final value of this constant will be number of columns in grid
+        int constant = 1;
+        // maximal column width to which fetched image with maximal width can be stably
+        // stretched by Picasso
+        while (width / constant > 254) {
+            constant += 1;
         }
+        gridView.setNumColumns(constant);
+        int itemWidth = width / constant;
+        gridView.setColumnWidth(itemWidth);
 
         // Set adapter with empty cursor
         // Note: CursorLoader will automatically initiate Cursor and register ContentObserver
         // on it, that is why no flags needed
-        mGridAdapter = new GridAdapter(getActivity(), null, 0);
+        mGridAdapter = new GridAdapter(getActivity(), null, 0, itemWidth);
         gridView.setAdapter(mGridAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

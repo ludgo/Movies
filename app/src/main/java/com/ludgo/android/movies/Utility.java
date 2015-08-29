@@ -11,11 +11,22 @@ public class Utility {
 
     /**
      * @param ending is in format '/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg'
-     * @return is in format 'http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg'
+     * @param viewWidth is the width of ImageView in pixels
      */
-    public static String createUrlFromEnding(String ending) {
-        final String URL_BASE = "http://image.tmdb.org/t/p/w185/";
-        return URL_BASE + ending;
+    public static String createPosterUrl(String ending, int viewWidth) {
+        final String URL_BASE = "http://image.tmdb.org/t/p/";
+        String posterWidth;
+        if (viewWidth <= 92 ){
+            posterWidth = "w92";
+        } else if (viewWidth <= 154 ){
+            posterWidth = "w154";
+        } else if (viewWidth <= 254) {
+            // maximal image width provided by api which proved good performance at grid
+            posterWidth = "w185";
+        } else {
+            posterWidth = "w342";
+        }
+        return URL_BASE + posterWidth + ending;
     }
 
     /**
