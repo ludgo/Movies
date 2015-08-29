@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,14 +44,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private static final int REVIEWS_LOADER = 21;
 
     // Inflater that will inflate text views to append
-    LayoutInflater mInflater;
+    private static LayoutInflater mInflater;
 
     private static TextView titleTextView;
     private static TextView yearTextView;
-    private Button favoriteButton;
+    private static TextView favoriteTextView;
     // here is reference to views where text views will be appended
-    private LinearLayout trailersLinearLayout;
-    private LinearLayout reviewsLinearLayout;
+    private static LinearLayout trailersLinearLayout;
+    private static LinearLayout reviewsLinearLayout;
 
     public DetailFragment() {
     }
@@ -73,21 +72,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         ShareActionProvider mShareActionProvider =
                 (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
         // Attach an intent to this ShareActionProvider
-        if (mShareActionProvider != null ) {
+        if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
-    }
-
-    private static Intent createShareIntent(){
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        shareIntent.setType("text/plain");
-        String title = (String) titleTextView.getText();
-        String year = (String) yearTextView.getText();
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-                "Hi! Check out the movie " + title + " (" + year +
-                        "). My opinion is " + "/10. #Movies app");
-        return shareIntent;
     }
 
     @Override
@@ -102,7 +89,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
         yearTextView = (TextView) rootView.findViewById(R.id.year);
         TextView voteAverageTextView = (TextView) rootView.findViewById(R.id.voteAverage);
-        favoriteButton = (Button) rootView.findViewById(R.id.favorite);
+        favoriteTextView = (TextView) rootView.findViewById(R.id.favorite);
         TextView overviewTextView = (TextView) rootView.findViewById(R.id.overview);
         trailersLinearLayout = (LinearLayout) rootView.findViewById(R.id.trailers);
         reviewsLinearLayout = (LinearLayout) rootView.findViewById(R.id.reviews);
@@ -152,20 +139,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             final double voteAverage = cursor.getDouble(5);
             voteAverageTextView.setText(Double.toString(voteAverage) + "/10");
 
-            // allow user to mark movie as favorite
+            // allow user to mark/unmark movie as favorite
             int favorite = cursor.getInt(6);
-            favoriteButton.setOnClickListener(new View.OnClickListener() {
+            if (favorite == 1) {
+                favoriteTextView.setSelected(true);
+            }
+            favoriteTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Change appropriate column in the database
-                    favoriteButton.setText("IN");
-                    ContentValues movieValues = new ContentValues();
-                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 1);
-                    getActivity().getContentResolver().update(
-                            MoviesContract.MoviesEntry.buildMoviesUriWithId(DetailActivity.getMovieId()),
-                            movieValues,
-                            null,
-                            null);
+                    onToggleFavorite();
                 }
             });
         }
@@ -186,27 +168,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onStart();
         fetchTrailers();
         fetchReviews();
-    }
-
-    void fetchTrailers() {
-        // Save trailers for this movie in database
-        Intent intent = new Intent(getActivity(), TrailersService.class)
-                .setData(MoviesContract.MoviesEntry
-                        .buildMoviesUriWithId(DetailActivity.getMovieId()));
-        getActivity().startService(intent);
-    }
-
-    void fetchReviews() {
-        // Save reviews for this movie in database after some time
-        Intent fetchIntent = new Intent(getActivity(), ReviewsService.FetchReceiver.class)
-                .setData(MoviesContract.MoviesEntry
-                        .buildMoviesUriWithId(DetailActivity.getMovieId()));
-        // Pending intent instead of regular to achieve better performance
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, fetchIntent,
-                PendingIntent.FLAG_ONE_SHOT);
-        //Set the AlarmManager to wake up the system.
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pendingIntent);
     }
 
     @Override
@@ -286,5 +247,60 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
+    }
+
+    private static Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        String title = (String) titleTextView.getText();
+        String year = (String) yearTextView.getText();
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                "Hi! Check out the movie " + title + " (" + year +
+                        "). My opinion is " + "/10. #Movies app");
+        return shareIntent;
+    }
+
+    void fetchTrailers() {
+        // Save trailers for this movie in database
+        Intent intent = new Intent(getActivity(), TrailersService.class)
+                .setData(MoviesContract.MoviesEntry
+                        .buildMoviesUriWithId(DetailActivity.getMovieId()));
+        getActivity().startService(intent);
+    }
+
+    void fetchReviews() {
+        // Save reviews for this movie in database after some time
+        Intent fetchIntent = new Intent(getActivity(), ReviewsService.FetchReceiver.class)
+                .setData(MoviesContract.MoviesEntry
+                        .buildMoviesUriWithId(DetailActivity.getMovieId()));
+        // Pending intent instead of regular to achieve better performance
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, fetchIntent,
+                PendingIntent.FLAG_ONE_SHOT);
+        //Set the AlarmManager to wake up the system.
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, pendingIntent);
+    }
+
+    private void onToggleFavorite() {
+        if (favoriteTextView.isSelected()) {
+            favoriteTextView.setSelected(false);
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 0);
+            getActivity().getContentResolver().update(
+                    MoviesContract.MoviesEntry.buildMoviesUriWithId(DetailActivity.getMovieId()),
+                    movieValues,
+                    null,
+                    null);
+        } else {
+            favoriteTextView.setSelected(true);
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 1);
+            getActivity().getContentResolver().update(
+                    MoviesContract.MoviesEntry.buildMoviesUriWithId(DetailActivity.getMovieId()),
+                    movieValues,
+                    null,
+                    null);
+        }
     }
 }

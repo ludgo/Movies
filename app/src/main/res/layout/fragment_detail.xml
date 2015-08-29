@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="com.ludgo.android.movies.DetailFragment">
+    tools:context=".DetailFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,44 +47,46 @@
 
             </FrameLayout>
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingEnd="8dp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp">
+                android:padding="8dp">
 
-                <TextView
-                    android:id="@+id/year"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"
-                    android:textColor="@color/grey_600"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/voteAverage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="sans-serif-condensed"
-                    android:paddingBottom="16dp"
-                    android:textColor="@color/black" />
-
-                <Button
-                    android:id="@+id/favorite"
+                <!-- NOT useless: enabling vertical center -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#00FF00"
-                    android:padding="8dp"
-                    android:text="FAVORITE" />
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/year"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="16dp"
+                        android:textColor="@color/grey_600"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/voteAverage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:paddingBottom="24dp"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#00ffffff"
+                        android:drawableLeft="@drawable/star"
+                        android:drawableStart="@drawable/star" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </LinearLayout>
 
