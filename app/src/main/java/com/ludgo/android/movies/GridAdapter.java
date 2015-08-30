@@ -3,7 +3,6 @@ package com.ludgo.android.movies;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,7 @@ public class GridAdapter extends CursorAdapter {
         String posterUrl = Utility.createPosterUrl(posterPath, widthInPx);
         Picasso.with(context)
                 .load(posterUrl)
-                .resize(widthInPx, 0)
+                .resize(widthInPx, 0)  // prepares image to suit grid with respect to its ratio
                 .into((ImageView) view);
     }
 }

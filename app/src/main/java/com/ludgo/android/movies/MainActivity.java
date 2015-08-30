@@ -1,16 +1,19 @@
 package com.ludgo.android.movies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements GridFragment.Callback {
 
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static boolean isSingleFragment;
+
     private final String GRID_FRAGMENT_TAG = "GF_TAG";
+    private final String DETAIL_FRAGMENT_TAG = "DF_TAG";
 
     // Rules how to order grid
     private static String showRule;
@@ -23,10 +26,12 @@ public class MainActivity extends ActionBarActivity {
         sortRule = Utility.getSortRule(this);
 
         super.onCreate(savedInstanceState);
+        // dynamic approach when setting both fragments
         setContentView(R.layout.activity_main);
+        isSingleFragment = findViewById(R.id.holder_detail) == null;
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new GridFragment(), GRID_FRAGMENT_TAG)
+                    .replace(R.id.holder_grid, new GridFragment(), GRID_FRAGMENT_TAG)
                     .commit();
         }
     }
@@ -76,11 +81,35 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static String getShowRule() {
-        return showRule;
+    // Implemented as Callback in GridFragment
+    @Override
+    public void onItemSelected(Uri contentUri) {
+        if (isSingleFragment) {
+            // Case of one pane mode launches another activity
+
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(contentUri);
+            startActivity(intent);
+        } else {
+            // Case of two pane mode replaces fragment
+
+            // Create arguments such that DetailFragment will know
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.MOVIE_URI, contentUri);
+
+            // Set arguments on new created DetailFragment
+            DetailFragment df = new DetailFragment();
+            df.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.holder_detail, df, DETAIL_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
-    public static String getSortRule() {
-        return sortRule;
-    }
+    public static String getShowRule() { return showRule; }
+
+    public static String getSortRule() { return sortRule; }
+
+    public static boolean isSingleFragment() { return isSingleFragment; }
 }

@@ -1,8 +1,10 @@
 package com.ludgo.android.movies;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -24,8 +26,6 @@ import com.ludgo.android.movies.service.MoviesService;
  */
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final String LOG_TAG = GridFragment.class.getSimpleName();
-
     // Set id for each loader
     private static final int GRID_LOADER = 10;
 
@@ -35,6 +35,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     static final int COL_POSTER_PATH = 2;
 
     GridAdapter mGridAdapter;
+
+    /**
+     * This mechanism allows activities to be notified of item selections at fragments.
+     */
+    public interface Callback {
+        public void onItemSelected(Uri movieUri);
+    }
 
     public GridFragment() {
     }
@@ -52,16 +59,20 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
+        if (!MainActivity.isSingleFragment()) { width = width/2; };
 
-        // Final value of this constant will be number of columns in grid
-        int constant = 1;
-        // maximal column width to which fetched image with maximal width can be stably
-        // stretched by Picasso
-        while (width / constant > 254) {
-            constant += 1;
+        int itemWidth;
+        // Choose grid style
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // 2 columns when portrait orientation
+            gridView.setNumColumns(2);
+            itemWidth = width/2;
+        } else {
+            // 3 columns when landscape orientation
+            gridView.setNumColumns(3);
+            itemWidth = width/3;
         }
-        gridView.setNumColumns(constant);
-        int itemWidth = width / constant;
         gridView.setColumnWidth(itemWidth);
 
         // Set adapter with empty cursor
@@ -77,9 +88,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     int movie_id = cursor.getInt(COL_MOVIE_ID);
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id));
-                    startActivity(intent);
+                    ((Callback) getActivity()).onItemSelected(
+                            MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id));
                 }
             }
         });

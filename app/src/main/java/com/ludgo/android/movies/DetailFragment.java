@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,7 +38,9 @@ import com.squareup.picasso.Picasso;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final String LOG_TAG = DetailFragment.class.getSimpleName();
+    static final String MOVIE_URI = "URI";
+
+    private static int movie_id;
 
     // Set id for each loader
     private static final int TRAILERS_LOADER = 20;
@@ -81,12 +84,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Bundle arguments = getArguments();
+        Uri movieUri = (arguments != null) ?
+                // Case of two pane mode
+                (Uri) arguments.getParcelable(DetailFragment.MOVIE_URI) :
+                // Case of one pane mode
+                getActivity().getIntent().getData();
+        String movieIdStr = MoviesContract.getMovieIdStrFromUri(movieUri);
+        // Get key variable which is to determine the whole layout of the fragment
+        movie_id = Integer.parseInt(movieIdStr);
+
         mInflater = inflater;
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.title);
-        ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
+        FrameLayout posterContainer = (FrameLayout) rootView.findViewById(R.id.container_poster);
         yearTextView = (TextView) rootView.findViewById(R.id.year);
         TextView voteAverageTextView = (TextView) rootView.findViewById(R.id.voteAverage);
         favoriteTextView = (TextView) rootView.findViewById(R.id.favorite);
@@ -96,7 +109,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         // Pull details to display from database
         Cursor cursor = getActivity().getContentResolver().query(
-                MoviesContract.MoviesEntry.buildMoviesUriWithId(DetailActivity.getMovieId()),
+                MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id),
                 // if projection changes, indices must change!
                 new String[]{MoviesContract.MoviesEntry.TABLE_NAME + "." +
                         MoviesContract.MoviesEntry._ID,  // 0
@@ -113,31 +126,39 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // This movie should be in database, since its id got here from grid where the movie was
         if (cursor.moveToFirst()) {
             // set title
-            final String title = cursor.getString(1);
-            titleTextView.setText(title);
-            if (title.length() > 24) {
+            final String TITLE = cursor.getString(1);
+            titleTextView.setText(TITLE);
+            if (TITLE.length() > 24) {
                 // Shrink default text size
                 titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
             }
 
             // set overview
-            final String overview = cursor.getString(2);
-            overviewTextView.setText(overview);
+            final String OVERVIEW = cursor.getString(2);
+            overviewTextView.setText(OVERVIEW);
 
             // set poster
-            final String posterPath = cursor.getString(3);
+            final String POSTER_PATH = cursor.getString(3);
+            // 168dp is the width of posterContainer without padding
+            int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 168,
+                    getResources().getDisplayMetrics());
+            String posterUrl = Utility.createPosterUrl(POSTER_PATH, widthInPx);
+            // dynamically append ImageView
+            ImageView posterImageView = (ImageView) inflater.inflate(R.layout.grid_item, null);
+            posterContainer.addView(posterImageView);
             Picasso.with(getActivity())
-                    .load("http://image.tmdb.org/t/p/w342" + posterPath)
+                    .load(posterUrl)
+                    .resize(widthInPx, 0)
                     .into(posterImageView);
 
             // set year
-            final String releaseDate = cursor.getString(4);
-            String year = Utility.createYearFromReleaseDate(releaseDate);
+            final String RELEASE_DATE = cursor.getString(4);
+            String year = Utility.createYearFromReleaseDate(RELEASE_DATE);
             yearTextView.setText(year);
 
             // set vote average
-            final double voteAverage = cursor.getDouble(5);
-            voteAverageTextView.setText(Double.toString(voteAverage) + "/10");
+            final double VOTE_AVERAGE = cursor.getDouble(5);
+            voteAverageTextView.setText(Double.toString(VOTE_AVERAGE) + "/10");
 
             // allow user to mark/unmark movie as favorite
             int favorite = cursor.getInt(6);
@@ -177,7 +198,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             case TRAILERS_LOADER:
                 return new CursorLoader(getActivity(),
                         MoviesContract.TrailersEntry
-                                .buildTrailersUriWithId(DetailActivity.getMovieId()),
+                                .buildTrailersUriWithId(movie_id),
                         // if projection changes, indices must change!
                         new String[]{MoviesContract.TrailersEntry.TABLE_NAME + "." +
                                 MoviesContract.TrailersEntry._ID, // 0
@@ -189,7 +210,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             case REVIEWS_LOADER:
                 return new CursorLoader(getActivity(),
                         MoviesContract.ReviewsEntry
-                                .buildReviewsUriWithId(DetailActivity.getMovieId()),
+                                .buildReviewsUriWithId(movie_id),
                         // if projection changes, indices must change!
                         new String[]{MoviesContract.ReviewsEntry.TABLE_NAME + "." +
                                 MoviesContract.ReviewsEntry._ID, // 0
@@ -213,14 +234,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     // append all movie trailers to linear layout
                     do {
                         String trailerName = cursor.getString(1);
-                        final String trailerKey = cursor.getString(2);
+                        final String TRAILER_KEY = cursor.getString(2);
                         TextView trailerTextView = (TextView) mInflater
                                 .inflate(R.layout.trailer_item, null);
                         trailerTextView.setText(trailerName);
                         trailerTextView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                String trailerUrl = Utility.createYoutubeUrlFromKey(trailerKey);
+                                String trailerUrl = Utility.createYoutubeUrlFromKey(TRAILER_KEY);
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailerUrl));
                                 startActivity(intent);
                             }
@@ -265,7 +286,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Save trailers for this movie in database
         Intent intent = new Intent(getActivity(), TrailersService.class)
                 .setData(MoviesContract.MoviesEntry
-                        .buildMoviesUriWithId(DetailActivity.getMovieId()));
+                        .buildMoviesUriWithId(movie_id));
         getActivity().startService(intent);
     }
 
@@ -273,7 +294,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Save reviews for this movie in database after some time
         Intent fetchIntent = new Intent(getActivity(), ReviewsService.FetchReceiver.class)
                 .setData(MoviesContract.MoviesEntry
-                        .buildMoviesUriWithId(DetailActivity.getMovieId()));
+                        .buildMoviesUriWithId(movie_id));
         // Pending intent instead of regular to achieve better performance
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, fetchIntent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -288,7 +309,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             ContentValues movieValues = new ContentValues();
             movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 0);
             getActivity().getContentResolver().update(
-                    MoviesContract.MoviesEntry.buildMoviesUriWithId(DetailActivity.getMovieId()),
+                    MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id),
                     movieValues,
                     null,
                     null);
@@ -297,7 +318,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             ContentValues movieValues = new ContentValues();
             movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 1);
             getActivity().getContentResolver().update(
-                    MoviesContract.MoviesEntry.buildMoviesUriWithId(DetailActivity.getMovieId()),
+                    MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id),
                     movieValues,
                     null,
                     null);

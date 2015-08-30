@@ -20,8 +20,10 @@ public class Utility {
             posterWidth = "w92";
         } else if (viewWidth <= 154 ){
             posterWidth = "w154";
-        } else if (viewWidth <= 254) {
-            // maximal image width provided by api which proved good performance at grid
+        } else if (viewWidth <= 240) {
+            // Rather prefer enlarging the image (to such extent that the quality is acceptable)
+            // than choosing  the bigger one in order to assure performance of older phones
+            // with low pixel densities
             posterWidth = "w185";
         } else {
             posterWidth = "w342";
