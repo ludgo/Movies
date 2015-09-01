@@ -26,6 +26,9 @@ import com.ludgo.android.movies.service.MoviesService;
  */
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String POSITION_TAG = "POS_TAG";
+    static int activatedPosition = GridView.INVALID_POSITION;
+
     // Set id for each loader
     private static final int GRID_LOADER = 10;
 
@@ -34,7 +37,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     static final int COL_MOVIE_ID = 1;
     static final int COL_POSTER_PATH = 2;
 
-    GridAdapter mGridAdapter;
+    private GridView mGridView;
+    private GridAdapter mGridAdapter;
 
     /**
      * This mechanism allows activities to be notified of item selections at fragments.
@@ -52,7 +56,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         // Find grid view
-        GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
+        mGridView = (GridView) rootView.findViewById(R.id.gridview);
 
         // Get width of the actual screen
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -66,21 +70,21 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 2 columns when portrait orientation
-            gridView.setNumColumns(2);
+            mGridView.setNumColumns(2);
             itemWidth = width/2;
         } else {
             // 3 columns when landscape orientation
-            gridView.setNumColumns(3);
+            mGridView.setNumColumns(3);
             itemWidth = width/3;
         }
-        gridView.setColumnWidth(itemWidth);
+        mGridView.setColumnWidth(itemWidth);
 
         // Set adapter with empty cursor
         // Note: CursorLoader will automatically initiate Cursor and register ContentObserver
         // on it, that is why no flags needed
         mGridAdapter = new GridAdapter(getActivity(), null, 0, itemWidth);
-        gridView.setAdapter(mGridAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setAdapter(mGridAdapter);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
@@ -91,8 +95,16 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                     ((Callback) getActivity()).onItemSelected(
                             MoviesContract.MoviesEntry.buildMoviesUriWithId(movie_id));
                 }
+                activatedPosition = position;
             }
         });
+
+        if (!MainActivity.isSingleFragment() &&
+                savedInstanceState != null &&
+                savedInstanceState.containsKey(POSITION_TAG)) {
+            // Remind which grid item was chosen
+            activatedPosition = savedInstanceState.getInt(POSITION_TAG);
+        }
 
         return rootView;
     }
@@ -110,17 +122,14 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         updateGrid();
     }
 
-    // If settings have been changed since the activity was created, we need to fetch again
-    void fetchMovies() {
-        // Save movies details in database
-        Intent intent = new Intent(getActivity(), MoviesService.class);
-        getActivity().startService(intent);
-    }
-
-    // If settings have been changed since the activity was created, we need to update the grid
-    void updateGrid() {
-        // Display movies posters correspondingly
-        getLoaderManager().restartLoader(GRID_LOADER, null, this);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (!MainActivity.isSingleFragment() &&
+                activatedPosition != GridView.INVALID_POSITION) {
+            // Save the position of activated grid item
+            outState.putInt(POSITION_TAG, activatedPosition);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -148,7 +157,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         return new CursorLoader(getActivity(),
                 MoviesContract.MoviesEntry.CONTENT_URI,
-                // if projection changes, indices must change!
+                // if projection changes, the globally defined indices must change!
                 new String[]{MoviesContract.MoviesEntry._ID,
                         MoviesContract.MoviesEntry.COLUMN_MOVIE_ID,
                         MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
@@ -162,10 +171,33 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         mGridAdapter.swapCursor(cursor);
+
+        if (!MainActivity.isSingleFragment() &&
+                activatedPosition != GridView.INVALID_POSITION) {
+
+            // Restore previous state of scrollbar
+            mGridView.requestFocusFromTouch();
+            mGridView.setSelection(activatedPosition);
+            // Activate the view
+            mGridView.setItemChecked(activatedPosition, true);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mGridAdapter.swapCursor(null);
+    }
+
+    // If settings have been changed since the activity was created, we need to fetch again
+    void fetchMovies() {
+        // Save movies details in database
+        Intent intent = new Intent(getActivity(), MoviesService.class);
+        getActivity().startService(intent);
+    }
+
+    // If settings have been changed since the activity was created, we need to update the grid
+    void updateGrid() {
+        // Display movies posters correspondingly
+        getLoaderManager().restartLoader(GRID_LOADER, null, this);
     }
 }

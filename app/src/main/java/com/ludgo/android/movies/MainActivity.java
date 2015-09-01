@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.GridView;
 
 
 public class MainActivity extends ActionBarActivity implements GridFragment.Callback {
@@ -68,7 +69,10 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         showRule = currentShowRule;
         sortRule = currentSortRule;
 
-        // update the fragment layout using the fragment manager
+        // Reset activated item
+        GridFragment.activatedPosition = GridView.INVALID_POSITION;
+
+        // Update the fragment layout using the fragment manager
         GridFragment gridFragment = (GridFragment) getSupportFragmentManager()
                 .findFragmentByTag(GRID_FRAGMENT_TAG);
         if (null != gridFragment) {
