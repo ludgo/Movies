@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -99,7 +98,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         titleTextView = (TextView) rootView.findViewById(R.id.title);
-        FrameLayout posterContainer = (FrameLayout) rootView.findViewById(R.id.container_poster);
+        ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
         yearTextView = (TextView) rootView.findViewById(R.id.year);
         TextView voteAverageTextView = (TextView) rootView.findViewById(R.id.voteAverage);
         favoriteTextView = (TextView) rootView.findViewById(R.id.favorite);
@@ -143,9 +142,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 168,
                     getResources().getDisplayMetrics());
             String posterUrl = Utility.createPosterUrl(POSTER_PATH, widthInPx);
-            // dynamically append ImageView
-            ImageView posterImageView = (ImageView) inflater.inflate(R.layout.grid_item, null);
-            posterContainer.addView(posterImageView);
             Picasso.with(getActivity())
                     .load(posterUrl)
                     .resize(widthInPx, 0)

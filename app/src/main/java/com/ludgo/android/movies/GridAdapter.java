@@ -43,6 +43,6 @@ public class GridAdapter extends CursorAdapter {
         Picasso.with(context)
                 .load(posterUrl)
                 .resize(widthInPx, 0)  // prepares image to suit grid with respect to its ratio
-                .into((ImageView) view);
+                .into((ImageView) view.findViewById(R.id.image));
     }
 }
