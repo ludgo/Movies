@@ -12,4 +12,15 @@
         android:layout_height="match_parent"
         android:scrollbars="none" />
 
+    <TextView
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableBottom="@drawable/refresh_selector"
+        android:drawablePadding="32dp"
+        android:gravity="center_horizontal"
+        android:padding="32dp"
+        android:text="@string/view_empty_no_connection"
+        android:textSize="18sp" />
+
 </FrameLayout>

@@ -61,6 +61,11 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         String currentShowRule = Utility.getShowRule(this);
         String currentSortRule = Utility.getSortRule(this);
 
+        // Reset text of the empty view
+        GridFragment.mEmptyView.setText(R.string.view_empty_no_connection);
+        GridFragment.mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+                this.getResources().getDrawable(R.drawable.refresh_selector));
+
         if (showRule.equals(currentShowRule) && sortRule.equals(currentSortRule)) {
             // nothing changed
             return;

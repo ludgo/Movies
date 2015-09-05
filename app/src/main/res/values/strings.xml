@@ -7,6 +7,8 @@
     <string name="title_activity_detail">Detail</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="view_empty_no_connection">No Movies Available\nNo Internet Connection</string>
+    <string name="view_empty_no_favorites">No Movies Selected As Favorite</string>
     <string name="view_trailers">Trailers:</string>
     <string name="view_reviews">Reviews:</string>
 

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.ludgo.android.movies.data.MoviesContract;
 import com.ludgo.android.movies.service.MoviesService;
@@ -37,8 +38,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     static final int COL_MOVIE_ID = 1;
     static final int COL_POSTER_PATH = 2;
 
-    private GridView mGridView;
-    private GridAdapter mGridAdapter;
+    private static GridView mGridView;
+    static TextView mEmptyView;
+    private static GridAdapter mGridAdapter;
 
     /**
      * This mechanism allows activities to be notified of item selections at fragments.
@@ -57,6 +59,14 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         // Find grid view
         mGridView = (GridView) rootView.findViewById(R.id.gridview);
+        mEmptyView = (TextView) rootView.findViewById(R.id.emptyView);
+        mEmptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fetchMovies();
+                updateGrid();
+            }
+        });
 
         // Get width of the actual screen
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -83,6 +93,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         // Note: CursorLoader will automatically initiate Cursor and register ContentObserver
         // on it, that is why no flags needed
         mGridAdapter = new GridAdapter(getActivity(), null, 0, itemWidth);
+        mGridView.setEmptyView(mEmptyView);
         mGridView.setAdapter(mGridAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -170,16 +181,26 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        mGridAdapter.swapCursor(cursor);
+        if (!Utility.isNetworkAvailable(getActivity())) {
+            // No action without connection since the whole app is based on fetching immediate data
+            mGridAdapter.swapCursor(null);
+        } else {
+            mGridAdapter.swapCursor(cursor);
 
-        if (!MainActivity.isSingleFragment() &&
-                activatedPosition != GridView.INVALID_POSITION) {
-
-            // Restore previous state of scrollbar
-            mGridView.requestFocusFromTouch();
-            mGridView.setSelection(activatedPosition);
-            // Activate the view
-            mGridView.setItemChecked(activatedPosition, true);
+            if (!cursor.moveToFirst() &&
+                    MainActivity.getShowRule().equals(
+                            getActivity().getString(R.string.pref_show_entryValues_favorites))){
+                // Case when user has no movies in their favorites collection
+                mEmptyView.setText(R.string.view_empty_no_favorites);
+                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+            } else if (!MainActivity.isSingleFragment() &&
+                        activatedPosition != GridView.INVALID_POSITION) {
+                // Restore previous state of scrollbar
+                mGridView.requestFocusFromTouch();
+                mGridView.setSelection(activatedPosition);
+                // Activate the view
+                mGridView.setItemChecked(activatedPosition, true);
+            }
         }
     }
 
