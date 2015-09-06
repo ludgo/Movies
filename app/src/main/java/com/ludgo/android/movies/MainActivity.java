@@ -67,11 +67,6 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         boolean currentYearBoolean = Utility.getYearBoolean(this);
         String currentPreferredYear = Utility.getPreferredYear(this);
 
-        // Reset text of the empty view
-        GridFragment.mEmptyView.setText(R.string.view_empty_no_connection);
-        GridFragment.mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
-                this.getResources().getDrawable(R.drawable.refresh_selector));
-
         if (showRule.equals(currentShowRule) &&
                 sortRule.equals(currentSortRule) &&
                 yearBoolean == currentYearBoolean &&
@@ -84,6 +79,9 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         sortRule = currentSortRule;
         yearBoolean = currentYearBoolean;
         preferredYear = currentPreferredYear;
+
+        // Reset current page constant
+        GridFragment.page = 1;
 
         // Reset activated item
         GridFragment.activatedPosition = GridView.INVALID_POSITION;
@@ -101,7 +99,6 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         }
     }
 
-    // Implemented as Callback in GridFragment
     @Override
     public void onItemSelected(Uri contentUri) {
         if (isSingleFragment) {

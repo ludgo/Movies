@@ -28,7 +28,11 @@ import com.ludgo.android.movies.service.MoviesService;
 public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String POSITION_TAG = "POS_TAG";
+    // Variable that stores information which grid item is activated until
+    // either the page or a setting changes
     static int activatedPosition = GridView.INVALID_POSITION;
+
+    static int page = 1;
 
     // Set id for each loader
     private static final int GRID_LOADER = 10;
@@ -39,7 +43,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     static final int COL_POSTER_PATH = 2;
 
     private static GridView mGridView;
-    static TextView mEmptyView;
+    private static TextView mEmptyView;
+    private static TextView mPreviousPageView;
+    private static TextView mNextPageView;
     private static GridAdapter mGridAdapter;
 
     /**
@@ -57,8 +63,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
-        // Find grid view
+
         mGridView = (GridView) rootView.findViewById(R.id.gridview);
+
         mEmptyView = (TextView) rootView.findViewById(R.id.emptyView);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +74,29 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 updateGrid();
             }
         });
+
+        mPreviousPageView = (TextView) rootView.findViewById(R.id.previousPage);
+        mPreviousPageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activatedPosition = GridView.INVALID_POSITION;
+                if (page > 1) {
+                    page -= 1;
+                }
+                updateGrid();
+            }
+        });
+        mNextPageView = (TextView) rootView.findViewById(R.id.nextPage);
+        mNextPageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activatedPosition = GridView.INVALID_POSITION;
+                page += 1;
+                fetchMovies();
+                updateGrid();
+            }
+        });
+
 
         // Get width of the actual screen
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -149,16 +179,22 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 
+        String sortOption = null;
         // By which column to sort
-        String sortColumn = null;
         if (MainActivity.getSortRule().equals(
                 getActivity().getString(R.string.pref_sort_entryValues_popularity)
         )) {
-            sortColumn = MoviesContract.MoviesEntry.COLUMN_POPULARITY;
+            sortOption = MoviesContract.MoviesEntry.COLUMN_POPULARITY;
         } else if (MainActivity.getSortRule().equals(
                 getActivity().getString(R.string.pref_sort_entryValues_voteAverage)
         )) {
-            sortColumn = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE;
+            sortOption = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE;
+        }
+        // Order movies descending and limit the number to 12
+        sortOption += " DESC LIMIT 12";
+        if (page > 1) {
+            // Skip definite number of movies, since it is not the first page
+            sortOption = sortOption + " OFFSET " + (page - 1) * 12;
         }
 
         String showOption = null;
@@ -186,32 +222,59 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 new String[]{MoviesContract.MoviesEntry._ID,
                         MoviesContract.MoviesEntry.COLUMN_MOVIE_ID,
                         MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
-                        sortColumn,
+                        MoviesContract.MoviesEntry.COLUMN_POPULARITY,
+                        MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE,
                         MoviesContract.MoviesEntry.COLUMN_FAVORITE,
                         MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE},
                 showOption,
                 showOptionArgs,
-                sortColumn + " DESC LIMIT 12");
+                sortOption);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        mPreviousPageView.setVisibility(View.GONE);
+        mNextPageView.setVisibility(View.GONE);
+
         if (!Utility.isNetworkAvailable(getActivity())) {
+
+            // Modification of the empty view in case of no connection
+            mEmptyView.setText(R.string.view_empty_no_connection);
+            mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+                    this.getResources().getDrawable(R.drawable.ic_refresh_selector));
             // No action without connection since the whole app is based on fetching immediate data
             mGridAdapter.swapCursor(null);
+
         } else {
             mGridAdapter.swapCursor(cursor);
 
             if (!cursor.moveToFirst()) {
-                mEmptyView.setText(R.string.view_empty_no_movies);
-                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            } else if (!MainActivity.isSingleFragment() &&
-                    activatedPosition != GridView.INVALID_POSITION) {
-                // Restore previous state of scrollbar
-                mGridView.requestFocusFromTouch();
-                mGridView.setSelection(activatedPosition);
-                // Activate the view
-                mGridView.setItemChecked(activatedPosition, true);
+                if (page == 1) {
+                    // Modification of the empty view in case of no movies at all
+                    mEmptyView.setText(R.string.view_empty_no_movies);
+                    mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                } else {
+                    mPreviousPageView.setVisibility(View.VISIBLE);
+                    // Modification of the empty view in case of no more movies
+                    mEmptyView.setText(R.string.view_empty_no_more);
+                    mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                }
+
+            } else {
+
+                if (page > 1) {
+                    mPreviousPageView.setVisibility(View.VISIBLE);
+                }
+                mNextPageView.setVisibility(View.VISIBLE);
+
+                if (!MainActivity.isSingleFragment() &&
+                        activatedPosition != GridView.INVALID_POSITION) {
+                    // Restore previous state of scrollbar
+                    mGridView.requestFocusFromTouch();
+                    mGridView.setSelection(activatedPosition);
+                    // Activate the view
+                    mGridView.setItemChecked(activatedPosition, true);
+                }
             }
         }
     }
@@ -221,14 +284,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         mGridAdapter.swapCursor(null);
     }
 
-    // If settings have been changed since the activity was created, we need to fetch again
     void fetchMovies() {
         // Save movies details in database
         Intent intent = new Intent(getActivity(), MoviesService.class);
+        intent.putExtra(MoviesService.PAGE_EXTRA, page + "");
         getActivity().startService(intent);
     }
 
-    // If settings have been changed since the activity was created, we need to update the grid
     void updateGrid() {
         // Display movies posters correspondingly
         getLoaderManager().restartLoader(GRID_LOADER, null, this);

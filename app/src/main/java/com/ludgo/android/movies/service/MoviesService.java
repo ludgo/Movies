@@ -29,6 +29,8 @@ public class MoviesService extends IntentService {
 
     private final String LOG_TAG = MoviesService.class.getSimpleName();
 
+    public static final String PAGE_EXTRA = "page_extra";
+
     public MoviesService() {
         super("MoviesService");
     }
@@ -45,6 +47,10 @@ public class MoviesService extends IntentService {
 
         String sortRule = Utility.getSortRule(this);
         String year = Utility.getPreferredYear(this);
+        String pageStr = "1";
+        if (intent.hasExtra(PAGE_EXTRA)){
+            pageStr = intent.getStringExtra(PAGE_EXTRA);
+        }
         String apiKey = Utility.API_KEY;
 
         try {
@@ -54,11 +60,13 @@ public class MoviesService extends IntentService {
                     "http://api.themoviedb.org/3/discover/movie?";
             final String SORT_PARAM = "sort_by";
             final String YEAR_PARAM = "primary_release_year";
+            final String PAGE_PARAM = "page";
             final String KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sortRule)
                     .appendQueryParameter(YEAR_PARAM, year)
+                    .appendQueryParameter(PAGE_PARAM, pageStr)
                     .appendQueryParameter(KEY_PARAM, apiKey)
                     .build();
 
@@ -193,6 +201,9 @@ public class MoviesService extends IntentService {
             }
 
             // Insert new information into the database
+            // Note: Theoretically, there are 20 movie entries per fetched page. Considering
+            // not null requirements, however, it could be less. But it is still enough
+            // to populate 12-item grid view
             if ( contentValuesVector.size() > 0 ) {
                 ContentValues[] rowsArray = new ContentValues[contentValuesVector.size()];
                 contentValuesVector.toArray(rowsArray);

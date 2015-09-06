@@ -9,6 +9,9 @@
 
     <string name="view_empty_no_connection">No Movies Available\nNo Internet Connection</string>
     <string name="view_empty_no_movies">No Such Selected Movies Available</string>
+    <string name="view_empty_no_more">No More Movies Available</string>
+    <string name="view_previous_page">Previous Page</string>
+    <string name="view_next_page">Next Page</string>
     <string name="view_trailers">Trailers:</string>
     <string name="view_reviews">Reviews:</string>
 

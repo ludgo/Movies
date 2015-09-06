@@ -76,8 +76,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="#00ffffff"
-                    android:drawableLeft="@drawable/star"
-                    android:drawableStart="@drawable/star" />
+                    android:drawableLeft="@drawable/ic_star_selector"
+                    android:drawableStart="@drawable/ic_star_selector" />
 
             </LinearLayout>
 
