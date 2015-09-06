@@ -73,7 +73,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        if (!MainActivity.isSingleFragment()) { width = width/2; };
+        if (!MainActivity.isSingleFragment()) {
+            width = width / 2;
+        }
+        ;
 
         int itemWidth;
         // Choose grid style
@@ -81,11 +84,11 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 2 columns when portrait orientation
             mGridView.setNumColumns(2);
-            itemWidth = width/2;
+            itemWidth = width / 2;
         } else {
             // 3 columns when landscape orientation
             mGridView.setNumColumns(3);
-            itemWidth = width/3;
+            itemWidth = width / 3;
         }
         mGridView.setColumnWidth(itemWidth);
 
@@ -158,12 +161,23 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             sortColumn = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE;
         }
 
-        // If show only favorites
         String showOption = null;
+        String[] showOptionArgs = null;
+        // If show only favorites
         if (MainActivity.getShowRule().equals(
                 getActivity().getString(R.string.pref_show_entryValues_favorites)
         )) {
             showOption = MoviesContract.MoviesEntry.COLUMN_FAVORITE + " = 1";
+        }
+        // If show only one particular year movies
+        final String YEAR = MainActivity.getPreferredYear();
+        if (MainActivity.getYearBoolean() && !YEAR.equals("")) {
+            if (showOption == null) {
+                showOption = MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE + " LIKE ?";
+            } else {
+                showOption += " AND " + MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE + " LIKE ?";
+            }
+            showOptionArgs = new String[]{MainActivity.getPreferredYear() + "-__-__"};
         }
 
         return new CursorLoader(getActivity(),
@@ -173,9 +187,10 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                         MoviesContract.MoviesEntry.COLUMN_MOVIE_ID,
                         MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
                         sortColumn,
-                        MoviesContract.MoviesEntry.COLUMN_FAVORITE},
+                        MoviesContract.MoviesEntry.COLUMN_FAVORITE,
+                        MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE},
                 showOption,
-                null,
+                showOptionArgs,
                 sortColumn + " DESC LIMIT 12");
     }
 
@@ -187,14 +202,11 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         } else {
             mGridAdapter.swapCursor(cursor);
 
-            if (!cursor.moveToFirst() &&
-                    MainActivity.getShowRule().equals(
-                            getActivity().getString(R.string.pref_show_entryValues_favorites))){
-                // Case when user has no movies in their favorites collection
-                mEmptyView.setText(R.string.view_empty_no_favorites);
+            if (!cursor.moveToFirst()) {
+                mEmptyView.setText(R.string.view_empty_no_movies);
                 mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
             } else if (!MainActivity.isSingleFragment() &&
-                        activatedPosition != GridView.INVALID_POSITION) {
+                    activatedPosition != GridView.INVALID_POSITION) {
                 // Restore previous state of scrollbar
                 mGridView.requestFocusFromTouch();
                 mGridView.setSelection(activatedPosition);

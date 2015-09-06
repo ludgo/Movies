@@ -62,6 +62,18 @@ public class Utility {
                 context.getString(R.string.pref_show_entryValues_default));
     }
 
+    // Find rule whether to use year preference
+    public static boolean getYearBoolean(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean(context.getString(R.string.pref_enable_year_key), false);
+    }
+
+    // Find year from which movies to display in grid
+    public static String getPreferredYear(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(context.getString(R.string.pref_year_key), "");
+    }
+
     public static boolean isNetworkAvailable(final Context context) {
         final ConnectivityManager connectivityManager =
                 ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));

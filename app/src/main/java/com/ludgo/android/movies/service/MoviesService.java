@@ -44,6 +44,7 @@ public class MoviesService extends IntentService {
         String moviesApiString;
 
         String sortRule = Utility.getSortRule(this);
+        String year = Utility.getPreferredYear(this);
         String apiKey = Utility.API_KEY;
 
         try {
@@ -52,10 +53,12 @@ public class MoviesService extends IntentService {
             final String API_BASE_URL =
                     "http://api.themoviedb.org/3/discover/movie?";
             final String SORT_PARAM = "sort_by";
+            final String YEAR_PARAM = "primary_release_year";
             final String KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sortRule)
+                    .appendQueryParameter(YEAR_PARAM, year)
                     .appendQueryParameter(KEY_PARAM, apiKey)
                     .build();
 

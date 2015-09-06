@@ -19,12 +19,16 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
     // Rules how to order grid
     private static String showRule;
     private static String sortRule;
+    private static boolean yearBoolean;
+    private static String preferredYear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load necessary rules
         showRule = Utility.getShowRule(this);
         sortRule = Utility.getSortRule(this);
+        yearBoolean = Utility.getYearBoolean(this);
+        preferredYear = Utility.getPreferredYear(this);
 
         super.onCreate(savedInstanceState);
         // dynamic approach when setting both fragments
@@ -60,19 +64,26 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         super.onResume();
         String currentShowRule = Utility.getShowRule(this);
         String currentSortRule = Utility.getSortRule(this);
+        boolean currentYearBoolean = Utility.getYearBoolean(this);
+        String currentPreferredYear = Utility.getPreferredYear(this);
 
         // Reset text of the empty view
         GridFragment.mEmptyView.setText(R.string.view_empty_no_connection);
         GridFragment.mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
                 this.getResources().getDrawable(R.drawable.refresh_selector));
 
-        if (showRule.equals(currentShowRule) && sortRule.equals(currentSortRule)) {
+        if (showRule.equals(currentShowRule) &&
+                sortRule.equals(currentSortRule) &&
+                yearBoolean == currentYearBoolean &&
+                preferredYear.equals(currentPreferredYear)) {
             // nothing changed
             return;
         }
 
         showRule = currentShowRule;
         sortRule = currentSortRule;
+        yearBoolean = currentYearBoolean;
+        preferredYear = currentPreferredYear;
 
         // Reset activated item
         GridFragment.activatedPosition = GridView.INVALID_POSITION;
@@ -116,9 +127,23 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         }
     }
 
-    public static String getShowRule() { return showRule; }
+    public static String getShowRule() {
+        return showRule;
+    }
 
-    public static String getSortRule() { return sortRule; }
+    public static String getSortRule() {
+        return sortRule;
+    }
 
-    public static boolean isSingleFragment() { return isSingleFragment; }
+    public static boolean getYearBoolean() {
+        return yearBoolean;
+    }
+
+    public static String getPreferredYear() {
+        return preferredYear;
+    }
+
+    public static boolean isSingleFragment() {
+        return isSingleFragment;
+    }
 }

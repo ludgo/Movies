@@ -13,4 +13,18 @@
         android:entryValues="@array/pref_show_entryValues"
         android:key="@string/pref_show_key"
         android:title="@string/pref_show_title" />
+
+    <CheckBoxPreference
+        android:key="@string/pref_enable_year_key"
+        android:summaryOff="@string/pref_enable_year_off"
+        android:summaryOn="@string/pref_enable_year_on"
+        android:title="@string/pref_enable_year_title" />
+
+    <EditTextPreference
+        android:dependency="@string/pref_enable_year_key"
+        android:dialogMessage="@string/pref_year_dialogMessage"
+        android:inputType="text"
+        android:key="@string/pref_year_key"
+        android:singleLine="true"
+        android:title="@string/pref_year_title" />
 </PreferenceScreen>

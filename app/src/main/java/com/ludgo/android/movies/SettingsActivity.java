@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -25,6 +27,8 @@ public class SettingsActivity extends PreferenceActivity
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_sort_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_show_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_enable_year_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_year_key)));
     }
 
     /**
@@ -36,12 +40,14 @@ public class SettingsActivity extends PreferenceActivity
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
 
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+        if (!(preference instanceof CheckBoxPreference)){
+            // Trigger the listener immediately with the preference's
+            // current value.
+            onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(), ""));
+        }
     }
 
     @Override
@@ -56,8 +62,8 @@ public class SettingsActivity extends PreferenceActivity
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
-        } else {
-            // For other preferences, set the summary to the value's simple string representation.
+        } else if (preference instanceof EditTextPreference) {
+            // For edit text preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
         }
         return true;
