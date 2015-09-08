@@ -7,13 +7,26 @@
     <string name="title_activity_detail">Detail</string>
     <string name="title_activity_settings">Settings</string>
 
-    <string name="view_empty_no_connection">No Movies Available\nNo Internet Connection</string>
-    <string name="view_empty_no_movies">No Such Selected Movies Available</string>
-    <string name="view_empty_no_more">No More Movies Available</string>
     <string name="view_previous_page">Previous Page</string>
     <string name="view_next_page">Next Page</string>
     <string name="view_trailers">Trailers:</string>
     <string name="view_reviews">Reviews:</string>
+
+    <string name="view_empty_no_connection">
+        No Movies Available\nNo Internet Connection
+    </string>
+    <string name="view_empty_no_match">
+        No Movies Match Selected Criteria
+    </string>
+    <string name="view_empty_no_more">
+        No More Movies Match Selected Criteria
+    </string>
+    <string name="view_empty_server_down">
+        No Movies Available\nThe server is not returning data
+    </string>
+    <string name="view_empty_server_error">
+        No Movies Available\nThe server is not returning valid data\nPlease check for an updated version of the app
+    </string>
 
     <string name="pref_sort_title">Sort by</string>
     <string name="pref_sort_key" translatable="false">sort_by</string>
@@ -39,4 +52,6 @@
     <string name="pref_year_title">Choose year</string>
     <string name="pref_year_key" translatable="false">year</string>
     <string name="pref_year_dialogMessage">Type year in format YYYY (blank means all years)</string>
+
+    <string name="pref_movies_status_key" translatable="false">movies_status</string>
 </resources>

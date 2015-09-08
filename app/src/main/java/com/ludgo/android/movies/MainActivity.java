@@ -11,16 +11,16 @@ import android.widget.GridView;
 
 public class MainActivity extends ActionBarActivity implements GridFragment.Callback {
 
-    private static boolean isSingleFragment;
+    static boolean isSingleFragment;
 
     private final String GRID_FRAGMENT_TAG = "GF_TAG";
     private final String DETAIL_FRAGMENT_TAG = "DF_TAG";
 
     // Rules how to order grid
-    private static String showRule;
-    private static String sortRule;
-    private static boolean yearBoolean;
-    private static String preferredYear;
+    static String showRule;
+    static String sortRule;
+    static boolean yearBoolean;
+    static String preferredYear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,25 +122,5 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
                     .replace(R.id.holder_detail, df, DETAIL_FRAGMENT_TAG)
                     .commit();
         }
-    }
-
-    public static String getShowRule() {
-        return showRule;
-    }
-
-    public static String getSortRule() {
-        return sortRule;
-    }
-
-    public static boolean getYearBoolean() {
-        return yearBoolean;
-    }
-
-    public static String getPreferredYear() {
-        return preferredYear;
-    }
-
-    public static boolean isSingleFragment() {
-        return isSingleFragment;
     }
 }

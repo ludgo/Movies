@@ -6,6 +6,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
+import com.ludgo.android.movies.service.MoviesService;
+
 public class Utility {
 
     // # is private key for developer
@@ -48,36 +50,58 @@ public class Utility {
         return "http://www.youtube.com/watch?v=" + key;
     }
 
-    // Find rule how to order movies in grid
+    /*
+        Find rule how to order movies in grid
+     */
     public static String getSortRule(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(context.getString(R.string.pref_sort_key),
                 context.getString(R.string.pref_sort_entryValues_default));
     }
 
-    // Find rule what to display in grid
+    /*
+        Find rule what to display in grid
+     */
     public static String getShowRule(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(context.getString(R.string.pref_show_key),
                 context.getString(R.string.pref_show_entryValues_default));
     }
 
-    // Find rule whether to use year preference
+    /**
+     * @return true if year preference should be used
+     */
     public static boolean getYearBoolean(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getBoolean(context.getString(R.string.pref_enable_year_key), false);
     }
 
-    // Find year from which movies to display in grid
+    /**
+     * @return year from which movies to display in grid
+     */
     public static String getPreferredYear(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(context.getString(R.string.pref_year_key), "");
     }
 
+    /**
+     * @return true if the network is available
+     */
     public static boolean isNetworkAvailable(final Context context) {
-        final ConnectivityManager connectivityManager =
+        final ConnectivityManager cm =
                 ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    /**
+     * @return integer describing the movies server status response type or unknown by default
+     */
+    @SuppressWarnings("ResourceType")
+    public static @MoviesService.MoviesStatus
+    int getMoviesStatus(Context context){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return sp.getInt(context.getString(R.string.pref_movies_status_key),
+                MoviesService.MOVIES_STATUS_UNKNOWN);
     }
 }

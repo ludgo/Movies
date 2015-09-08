@@ -2,11 +2,16 @@ package com.ludgo.android.movies.service;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.ludgo.android.movies.R;
 import com.ludgo.android.movies.Utility;
 import com.ludgo.android.movies.data.MoviesContract;
 
@@ -18,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
@@ -30,6 +37,16 @@ public class MoviesService extends IntentService {
     private final String LOG_TAG = MoviesService.class.getSimpleName();
 
     public static final String PAGE_EXTRA = "page_extra";
+
+    // Annotated interface to provide server status integer description
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MOVIES_STATUS_OK, MOVIES_STATUS_SERVER_DOWN, MOVIES_STATUS_SERVER_INVALID, MOVIES_STATUS_UNKNOWN})
+    public @interface MoviesStatus {}
+
+    public static final int MOVIES_STATUS_OK = 0;
+    public static final int MOVIES_STATUS_SERVER_DOWN = 1;
+    public static final int MOVIES_STATUS_SERVER_INVALID = 2;
+    public static final int MOVIES_STATUS_UNKNOWN = 3;
 
     public MoviesService() {
         super("MoviesService");
@@ -94,6 +111,7 @@ public class MoviesService extends IntentService {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
+                setMoviesStatus(this, MOVIES_STATUS_SERVER_DOWN);
                 return;
             }
             moviesApiString = buffer.toString();
@@ -102,9 +120,11 @@ public class MoviesService extends IntentService {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the movie data, there's no point in attempting
             // to parse it.
+            setMoviesStatus(this, MOVIES_STATUS_SERVER_DOWN);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            setMoviesStatus(this, MOVIES_STATUS_SERVER_INVALID);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -210,9 +230,23 @@ public class MoviesService extends IntentService {
                 this.getContentResolver()
                         .bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, rowsArray);
             }
+            setMoviesStatus(this, MOVIES_STATUS_OK);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            setMoviesStatus(this, MOVIES_STATUS_SERVER_INVALID);
         }
+    }
+
+    /**
+     * Saves the movies server response status code into shared preference. Should not be called
+     * from the UI thread because it uses commit and not apply.
+     * @param moviesStatus The IntDef value to set
+     */
+    static private void setMoviesStatus(Context context, @MoviesStatus int moviesStatus){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putInt(context.getString(R.string.pref_movies_status_key), moviesStatus);
+        spe.commit();
     }
 }

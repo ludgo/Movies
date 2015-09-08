@@ -1,11 +1,13 @@
 package com.ludgo.android.movies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -25,7 +27,8 @@ import com.ludgo.android.movies.service.MoviesService;
 /**
  * Display grid of movie posters
  */
-public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class GridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String POSITION_TAG = "POS_TAG";
     // Variable that stores information which grid item is activated until
@@ -103,10 +106,9 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        if (!MainActivity.isSingleFragment()) {
+        if (!MainActivity.isSingleFragment) {
             width = width / 2;
         }
-        ;
 
         int itemWidth;
         // Choose grid style
@@ -143,7 +145,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
-        if (!MainActivity.isSingleFragment() &&
+        if (!MainActivity.isSingleFragment &&
                 savedInstanceState != null &&
                 savedInstanceState.containsKey(POSITION_TAG)) {
             // Remind which grid item was chosen
@@ -167,8 +169,29 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onResume() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if ( key.equals(getString(R.string.pref_movies_status_key)) ) {
+            updateEmptyView();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (!MainActivity.isSingleFragment() &&
+        if (!MainActivity.isSingleFragment &&
                 activatedPosition != GridView.INVALID_POSITION) {
             // Save the position of activated grid item
             outState.putInt(POSITION_TAG, activatedPosition);
@@ -181,11 +204,11 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         String sortOption = null;
         // By which column to sort
-        if (MainActivity.getSortRule().equals(
+        if (MainActivity.sortRule.equals(
                 getActivity().getString(R.string.pref_sort_entryValues_popularity)
         )) {
             sortOption = MoviesContract.MoviesEntry.COLUMN_POPULARITY;
-        } else if (MainActivity.getSortRule().equals(
+        } else if (MainActivity.sortRule.equals(
                 getActivity().getString(R.string.pref_sort_entryValues_voteAverage)
         )) {
             sortOption = MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE;
@@ -200,20 +223,20 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         String showOption = null;
         String[] showOptionArgs = null;
         // If show only favorites
-        if (MainActivity.getShowRule().equals(
+        if (MainActivity.showRule.equals(
                 getActivity().getString(R.string.pref_show_entryValues_favorites)
         )) {
             showOption = MoviesContract.MoviesEntry.COLUMN_FAVORITE + " = 1";
         }
         // If show only one particular year movies
-        final String YEAR = MainActivity.getPreferredYear();
-        if (MainActivity.getYearBoolean() && !YEAR.equals("")) {
+        final String YEAR = MainActivity.preferredYear;
+        if (MainActivity.yearBoolean && !YEAR.equals("")) {
             if (showOption == null) {
                 showOption = MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE + " LIKE ?";
             } else {
                 showOption += " AND " + MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE + " LIKE ?";
             }
-            showOptionArgs = new String[]{MainActivity.getPreferredYear() + "-__-__"};
+            showOptionArgs = new String[]{MainActivity.preferredYear + "-__-__"};
         }
 
         return new CursorLoader(getActivity(),
@@ -233,48 +256,42 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+
+        // Reset page navigator
         mPreviousPageView.setVisibility(View.GONE);
         mNextPageView.setVisibility(View.GONE);
 
         if (!Utility.isNetworkAvailable(getActivity())) {
-
             // Modification of the empty view in case of no connection
             mEmptyView.setText(R.string.view_empty_no_connection);
             mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
                     this.getResources().getDrawable(R.drawable.ic_refresh_selector));
             // No action without connection since the whole app is based on fetching immediate data
             mGridAdapter.swapCursor(null);
+            return;
+        }
 
+        mGridAdapter.swapCursor(cursor);
+
+        if (!cursor.moveToFirst()) {
+            updateEmptyView();
         } else {
-            mGridAdapter.swapCursor(cursor);
+            // Cursor contains data for at least one movie
 
-            if (!cursor.moveToFirst()) {
-                if (page == 1) {
-                    // Modification of the empty view in case of no movies at all
-                    mEmptyView.setText(R.string.view_empty_no_movies);
-                    mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-                } else {
-                    mPreviousPageView.setVisibility(View.VISIBLE);
-                    // Modification of the empty view in case of no more movies
-                    mEmptyView.setText(R.string.view_empty_no_more);
-                    mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-                }
+            // Navigate through the pages
+            if (page > 1) {
+                mPreviousPageView.setVisibility(View.VISIBLE);
+            }
+            mNextPageView.setVisibility(View.VISIBLE);
 
-            } else {
-
-                if (page > 1) {
-                    mPreviousPageView.setVisibility(View.VISIBLE);
-                }
-                mNextPageView.setVisibility(View.VISIBLE);
-
-                if (!MainActivity.isSingleFragment() &&
-                        activatedPosition != GridView.INVALID_POSITION) {
-                    // Restore previous state of scrollbar
-                    mGridView.requestFocusFromTouch();
-                    mGridView.setSelection(activatedPosition);
-                    // Activate the view
-                    mGridView.setItemChecked(activatedPosition, true);
-                }
+            // Restore state after tablet screen rotation
+            if (!MainActivity.isSingleFragment &&
+                    activatedPosition != GridView.INVALID_POSITION) {
+                // Restore previous state of scrollbar
+                mGridView.requestFocusFromTouch();
+                mGridView.setSelection(activatedPosition);
+                // Activate the view
+                mGridView.setItemChecked(activatedPosition, true);
             }
         }
     }
@@ -285,14 +302,54 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     void fetchMovies() {
-        // Save movies details in database
+        // Launch service with aim to save movies data in database
         Intent intent = new Intent(getActivity(), MoviesService.class);
         intent.putExtra(MoviesService.PAGE_EXTRA, page + "");
         getActivity().startService(intent);
     }
 
     void updateGrid() {
-        // Display movies posters correspondingly
+        // Initiate CursorLoader with aim to display posters that correspond to the settings
         getLoaderManager().restartLoader(GRID_LOADER, null, this);
+    }
+
+    /*
+        Find out why the cursor is empty and provide user with relevant information
+        why no movie posters are displayed
+     */
+    private void updateEmptyView() {
+
+        @MoviesService.MoviesStatus int moviesStatus = Utility.getMoviesStatus(getActivity());
+        switch (moviesStatus) {
+            case MoviesService.MOVIES_STATUS_OK:
+                if (page == 1) {
+                    // Modification of the empty view in case of no movies at all
+                    mEmptyView.setText(R.string.view_empty_no_match);
+                    mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                } else {
+                    // Modification of the empty view in case of no more movies
+                    mEmptyView.setText(R.string.view_empty_no_more);
+                    mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                    // Allow user to get back to filled cursor
+                    mPreviousPageView.setVisibility(View.VISIBLE);
+                }
+                break;
+            case MoviesService.MOVIES_STATUS_SERVER_DOWN:
+                // Modification of the empty view in case of server side problem
+                mEmptyView.setText(R.string.view_empty_server_down);
+                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+                        this.getResources().getDrawable(R.drawable.ic_refresh_selector));
+                break;
+            case MoviesService.MOVIES_STATUS_SERVER_INVALID:
+                // Modification of the empty view in case of strange server response
+                mEmptyView.setText(R.string.view_empty_server_error);
+                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+                        this.getResources().getDrawable(R.drawable.ic_refresh_selector));
+                break;
+            default:
+                // Modification of the empty view in case of unknown error
+                mEmptyView.setText(null);
+                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        }
     }
 }
