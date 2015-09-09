@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ludgo.android.movies.data.MoviesContract;
@@ -47,8 +48,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private static GridView mGridView;
     private static TextView mEmptyView;
-    private static TextView mPreviousPageView;
-    private static TextView mNextPageView;
+    private static ImageView mPreviousPageView;
+    private static ImageView mNextPageView;
     private static GridAdapter mGridAdapter;
 
     /**
@@ -67,7 +68,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
 
-        mGridView = (GridView) rootView.findViewById(R.id.gridview);
+        mGridView = (GridView) rootView.findViewById(R.id.gridView);
 
         mEmptyView = (TextView) rootView.findViewById(R.id.emptyView);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +79,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
-        mPreviousPageView = (TextView) rootView.findViewById(R.id.previousPage);
+        mPreviousPageView = (ImageView) rootView.findViewById(R.id.previousPage);
         mPreviousPageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,13 +90,16 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 updateGrid();
             }
         });
-        mNextPageView = (TextView) rootView.findViewById(R.id.nextPage);
+        mNextPageView = (ImageView) rootView.findViewById(R.id.nextPage);
         mNextPageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 activatedPosition = GridView.INVALID_POSITION;
                 page += 1;
-                fetchMovies();
+                // themoviedb.org API supports maximal value 1000 of the page parameter in Url
+                if (page <= 1000) {
+                    fetchMovies();
+                }
                 updateGrid();
             }
         });

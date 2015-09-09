@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".DetailFragment">
 
@@ -24,8 +24,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp">
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace">
 
             <FrameLayout
                 android:id="@+id/container_poster"
@@ -36,7 +36,15 @@
                 android:paddingEnd="16dp"
                 android:paddingLeft="8dp"
                 android:paddingRight="16dp"
-                android:paddingStart="8dp" >
+                android:paddingStart="8dp">
+
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/loading_ring"
+                    android:indeterminateDuration="2000" />
 
                 <ImageView
                     android:id="@+id/poster"
@@ -88,23 +96,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
             android:paddingTop="32dp"
             android:textColor="@color/grey_600" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:background="@color/black" />
+        <include layout="@layout/fragment_detail_line" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
             android:paddingTop="8dp"
             android:text="@string/view_trailers"
             android:textColor="@color/grey_600"
@@ -114,20 +117,17 @@
             android:id="@+id/trailers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:background="@color/black" />
+        <include layout="@layout/fragment_detail_line" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
             android:paddingTop="8dp"
             android:text="@string/view_reviews"
             android:textColor="@color/grey_600"
@@ -137,7 +137,9 @@
             android:id="@+id/reviews"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace" />
 
     </LinearLayout>
 
