@@ -104,13 +104,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
-
         // Get width of the actual screen
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         if (!MainActivity.isSingleFragment) {
+            // On tablet, the ratio of fragments is 1:1
             width = width / 2;
         }
 
@@ -197,7 +197,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onSaveInstanceState(Bundle outState) {
         if (!MainActivity.isSingleFragment &&
                 activatedPosition != GridView.INVALID_POSITION) {
-            // Save the position of activated grid item
+            // Save position of activated grid item
             outState.putInt(POSITION_TAG, activatedPosition);
         }
         super.onSaveInstanceState(outState);
@@ -240,6 +240,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             } else {
                 showOption += " AND " + MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE + " LIKE ?";
             }
+            // Based on the actual format of release date stored in the database
             showOptionArgs = new String[]{MainActivity.preferredYear + "-__-__"};
         }
 
@@ -280,8 +281,6 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         if (!cursor.moveToFirst()) {
             updateEmptyView();
         } else {
-            // Cursor contains data for at least one movie
-
             // Navigate through the pages
             if (page > 1) {
                 mPreviousPageView.setVisibility(View.VISIBLE);
@@ -325,6 +324,11 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @MoviesService.MoviesStatus int moviesStatus = Utility.getMoviesStatus(getActivity());
         switch (moviesStatus) {
+            case MoviesService.MOVIES_STATUS_LOADING:
+                // Modification of the empty view in case of incomplete fetching
+                mEmptyView.setText(R.string.view_empty_loading);
+                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                break;
             case MoviesService.MOVIES_STATUS_OK:
                 if (page == 1) {
                     // Modification of the empty view in case of no movies at all

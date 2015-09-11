@@ -266,15 +266,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
     }
 
-    private static Intent createShareIntent() {
+    private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-        String title = (String) titleTextView.getText();
-        String year = (String) yearTextView.getText();
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-                "Hi! Check out the movie " + title + " (" + year +
-                        "). My opinion is " + "/10. #Movies app");
+        // Add movie title and release year to the draft message
+        String shareMessage = getActivity().getString(R.string.action_share_message,
+                titleTextView.getText(),
+                yearTextView.getText());
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
         return shareIntent;
     }
 
