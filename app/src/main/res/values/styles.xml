@@ -1,7 +1,66 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar" />
+
+    <style name="Movies_ThemeTeal" parent="AppTheme">
+        <item name="theme_color">@color/teal</item>
+        <item name="theme_color_alpha25">@color/teal_alpha25</item>
+        <item name="theme_color_alpha50">@color/teal_alpha50</item>
+        <item name="theme_color_alpha75">@color/teal_alpha75</item>
+        <item name="theme_next_selector">@drawable/ic_next_selector_teal</item>
+        <item name="theme_previous_selector">@drawable/ic_previous_selector_teal</item>
+        <item name="theme_refresh_selector">@drawable/ic_refresh_selector_teal</item>
+        <item name="theme_loading_selector">@drawable/loading_ring_teal</item>
+        <item name="theme_state_selector">@drawable/state_selector_teal</item>
+    </style>
+
+    <style name="Movies_ThemeIndigo" parent="AppTheme">
+        <item name="theme_color">@color/indigo</item>
+        <item name="theme_color_alpha25">@color/indigo_alpha25</item>
+        <item name="theme_color_alpha50">@color/indigo_alpha50</item>
+        <item name="theme_color_alpha75">@color/indigo_alpha75</item>
+        <item name="theme_next_selector">@drawable/ic_next_selector_indigo</item>
+        <item name="theme_previous_selector">@drawable/ic_previous_selector_indigo</item>
+        <item name="theme_refresh_selector">@drawable/ic_refresh_selector_indigo</item>
+        <item name="theme_loading_selector">@drawable/loading_ring_indigo</item>
+        <item name="theme_state_selector">@drawable/state_selector_indigo</item>
+    </style>
+
+    <style name="Movies_ThemeDeepOrange" parent="AppTheme">
+        <item name="theme_color">@color/deepOrange</item>
+        <item name="theme_color_alpha25">@color/deepOrange_alpha25</item>
+        <item name="theme_color_alpha50">@color/deepOrange_alpha50</item>
+        <item name="theme_color_alpha75">@color/deepOrange_alpha75</item>
+        <item name="theme_next_selector">@drawable/ic_next_selector_deeporange</item>
+        <item name="theme_previous_selector">@drawable/ic_previous_selector_deeporange</item>
+        <item name="theme_refresh_selector">@drawable/ic_refresh_selector_deeporange</item>
+        <item name="theme_loading_selector">@drawable/loading_ring_deeporange</item>
+        <item name="theme_state_selector">@drawable/state_selector_deeporange</item>
+    </style>
+
+    <style name="Movies_ThemePink" parent="AppTheme">
+        <item name="theme_color">@color/pink</item>
+        <item name="theme_color_alpha25">@color/pink_alpha25</item>
+        <item name="theme_color_alpha50">@color/pink_alpha50</item>
+        <item name="theme_color_alpha75">@color/pink_alpha75</item>
+        <item name="theme_next_selector">@drawable/ic_next_selector_pink</item>
+        <item name="theme_previous_selector">@drawable/ic_previous_selector_pink</item>
+        <item name="theme_refresh_selector">@drawable/ic_refresh_selector_pink</item>
+        <item name="theme_loading_selector">@drawable/loading_ring_pink</item>
+        <item name="theme_state_selector">@drawable/state_selector_pink</item>
+    </style>
+
+    <style name="Movies_ThemeBlueGrey" parent="AppTheme">
+        <item name="theme_color">@color/blueGrey</item>
+        <item name="theme_color_alpha25">@color/blueGrey_alpha25</item>
+        <item name="theme_color_alpha50">@color/blueGrey_alpha50</item>
+        <item name="theme_color_alpha75">@color/blueGrey_alpha75</item>
+        <item name="theme_next_selector">@drawable/ic_next_selector_bluegrey</item>
+        <item name="theme_previous_selector">@drawable/ic_previous_selector_bluegrey</item>
+        <item name="theme_refresh_selector">@drawable/ic_refresh_selector_bluegrey</item>
+        <item name="theme_loading_selector">@drawable/loading_ring_bluegrey</item>
+        <item name="theme_state_selector">@drawable/state_selector_bluegrey</item>
+    </style>
 
     <style name="GridStyle" />
 

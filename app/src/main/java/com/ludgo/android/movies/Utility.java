@@ -2,6 +2,8 @@ package com.ludgo.android.movies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
@@ -82,6 +84,18 @@ public class Utility {
     public static String getPreferredYear(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(context.getString(R.string.pref_year_key), "");
+    }
+
+    /**
+     * To be used only in activities with derived theme
+     * @return refresh image with respect to the current theme
+     */
+    public static Drawable getRefreshDrawable(Context context) {
+        TypedArray attr = context.getTheme().obtainStyledAttributes(
+                new int[] {R.attr.theme_refresh_selector});
+        Drawable drawable = attr.getDrawable(0);
+        attr.recycle();
+        return drawable;
     }
 
     /**

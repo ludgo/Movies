@@ -31,6 +31,8 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         preferredYear = Utility.getPreferredYear(this);
 
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Movies_ThemeBlueGrey);
+
         // dynamic approach when setting both fragments
         setContentView(R.layout.activity_main);
         isSingleFragment = findViewById(R.id.holder_detail) == null;

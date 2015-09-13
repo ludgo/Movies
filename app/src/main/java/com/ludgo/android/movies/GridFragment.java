@@ -270,7 +270,7 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             // Modification of the empty view in case of no connection
             mEmptyView.setText(R.string.view_empty_no_connection);
             mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
-                    this.getResources().getDrawable(R.drawable.ic_refresh_selector));
+                    Utility.getRefreshDrawable(getActivity()));
             // No action without connection since the whole app is based on fetching immediate data
             mGridAdapter.swapCursor(null);
             return;
@@ -346,13 +346,13 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
                 // Modification of the empty view in case of server side problem
                 mEmptyView.setText(R.string.view_empty_server_down);
                 mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
-                        this.getResources().getDrawable(R.drawable.ic_refresh_selector));
+                        Utility.getRefreshDrawable(getActivity()));
                 break;
             case MoviesService.MOVIES_STATUS_SERVER_INVALID:
                 // Modification of the empty view in case of strange server response
                 mEmptyView.setText(R.string.view_empty_server_error);
                 mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
-                        this.getResources().getDrawable(R.drawable.ic_refresh_selector));
+                        Utility.getRefreshDrawable(getActivity()));
                 break;
             default:
                 // Modification of the empty view in case of unknown error

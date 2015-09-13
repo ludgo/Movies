@@ -35,9 +35,9 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/background_selector"
+            android:background="?theme_state_selector"
             android:contentDescription="@null"
-            android:src="@drawable/ic_previous_selector"
+            android:src="?theme_previous_selector"
             android:visibility="gone" />
 
         <ImageView
@@ -45,9 +45,9 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/background_selector"
+            android:background="?theme_state_selector"
             android:contentDescription="@null"
-            android:src="@drawable/ic_next_selector"
+            android:src="?theme_next_selector"
             android:visibility="gone" />
 
     </LinearLayout>

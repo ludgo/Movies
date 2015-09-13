@@ -12,10 +12,11 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Movies_ThemePink);
+
         // static approach when setting fragment
         setContentView(R.layout.activity_detail);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -16,9 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:background="@color/teal"
+            android:background="?theme_color"
             android:padding="32dp"
-            android:textColor="@color/white"
+            android:textColor="@android:color/white"
             android:textSize="45sp" />
 
         <RelativeLayout
@@ -43,7 +43,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:indeterminate="true"
-                    android:indeterminateDrawable="@drawable/loading_ring"
+                    android:indeterminateDrawable="?theme_loading_selector"
                     android:indeterminateDuration="2000" />
 
                 <ImageView
@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed"
                     android:paddingBottom="24dp"
-                    android:textColor="@color/black" />
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:id="@+id/favorite"
