@@ -4,14 +4,11 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-
-import java.util.Calendar;
 
 /**
  * Application settings
@@ -25,22 +22,12 @@ public class SettingsActivity extends PreferenceActivity
         // Add 'general' preferences, defined in the XML file
         addPreferencesFromResource(R.xml.pref_general);
 
-        YearEditTextPreference yearPreference =
-                (YearEditTextPreference) findPreference(getString(R.string.pref_year_key));
-        if (yearPreference.getText() == null) {
-            // Default value of year preference will always depend on the current date
-            Calendar calendar = Calendar.getInstance();
-            String yearStr = Integer.toString(calendar.get(Calendar.YEAR));
-            yearPreference.setText(yearStr);
-            yearPreference.setSummary(yearStr);
-        }
-
-        // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
+        // For some preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_sort_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_show_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_enable_year_key)));
-        bindPreferenceSummaryToValue(yearPreference);
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_year_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_theme_key)));
     }
 
     /**
@@ -52,14 +39,12 @@ public class SettingsActivity extends PreferenceActivity
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
 
-        if (!(preference instanceof CheckBoxPreference)) {
-            // Trigger the listener immediately with the preference's
-            // current value.
-            onPreferenceChange(preference,
-                    PreferenceManager
-                            .getDefaultSharedPreferences(preference.getContext())
-                            .getString(preference.getKey(), ""));
-        }
+        // Trigger the listener immediately with the preference's
+        // current value.
+        onPreferenceChange(preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getString(preference.getKey(), ""));
     }
 
     @Override

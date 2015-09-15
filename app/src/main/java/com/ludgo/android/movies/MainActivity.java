@@ -21,6 +21,7 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
     static String sortRule;
     static boolean yearBoolean;
     static String preferredYear;
+    private static int preferredTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +30,10 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
         sortRule = Utility.getSortRule(this);
         yearBoolean = Utility.getYearBoolean(this);
         preferredYear = Utility.getPreferredYear(this);
+        preferredTheme = Utility.getPreferredTheme(this);
 
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Movies_ThemeBlueGrey);
+        setTheme(preferredTheme);
 
         // dynamic approach when setting both fragments
         setContentView(R.layout.activity_main);
@@ -63,6 +65,10 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
 
     @Override
     protected void onResume() {
+        int currentTheme = Utility.getPreferredTheme(this);
+        if (preferredTheme != currentTheme) {
+            recreate();
+        }
         super.onResume();
         String currentShowRule = Utility.getShowRule(this);
         String currentSortRule = Utility.getSortRule(this);

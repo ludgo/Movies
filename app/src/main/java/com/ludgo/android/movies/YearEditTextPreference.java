@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.Calendar;
+
 
 /**
  * EditTextPreference customised to type a year A.D. in,
@@ -39,6 +41,10 @@ public class YearEditTextPreference extends EditTextPreference {
         } finally {
             container.recycle();
         }
+
+        // Default value will always depend on the current date
+        Calendar calendar = Calendar.getInstance();
+        setDefaultValue(Integer.toString(calendar.get(Calendar.YEAR)));
     }
 
     @Override
@@ -65,7 +71,9 @@ public class YearEditTextPreference extends EditTextPreference {
                     AlertDialog alertDialog = (AlertDialog) dialog;
                     Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                     // Check if the text matches criteria
-                    if (yearMinLength <= s.length() && s.length() <= yearMaxLength) {
+                    if (yearMinLength <= s.length()
+                            && s.length() <= yearMaxLength
+                            && s.toString().matches("[0-9]+")) {
                         // Enable OK button
                         positiveButton.setEnabled(true);
                     } else {

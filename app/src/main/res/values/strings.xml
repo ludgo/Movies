@@ -22,7 +22,7 @@
 
     <string name="pref_sort_title">Sort by</string>
     <string name="pref_sort_key" translatable="false">sort_by</string>
-    <string name="pref_sort_entryValues_default" translatable="false">popularity.desc</string>
+    <string name="pref_sort_entryValues_default" translatable="false">@string/pref_sort_entryValues_popularity</string>
     <string name="pref_sort_entryValues_popularity" translatable="false">popularity.desc</string>
     <string name="pref_sort_entryValues_voteAverage" translatable="false">vote_average.desc</string>
     <string name="pref_sort_entries_popularity">Most popular</string>
@@ -30,7 +30,7 @@
 
     <string name="pref_show_title">Show</string>
     <string name="pref_show_key" translatable="false">show</string>
-    <string name="pref_show_entryValues_default" translatable="false">all</string>
+    <string name="pref_show_entryValues_default" translatable="false">@string/pref_show_entryValues_all</string>
     <string name="pref_show_entryValues_all" translatable="false">all</string>
     <string name="pref_show_entryValues_favorites" translatable="false">favorites</string>
     <string name="pref_show_entries_all">All</string>
@@ -44,6 +44,20 @@
     <string name="pref_year_title">Choose year</string>
     <string name="pref_year_key" translatable="false">year</string>
     <string name="pref_year_dialogMessage">Type year in format YYYY</string>
+
+    <string name="pref_theme_title">Theme Color</string>
+    <string name="pref_theme_key" translatable="false">theme</string>
+    <string name="pref_theme_entryValues_default" translatable="false">@string/pref_theme_entryValues_teal</string>
+    <string name="pref_theme_entryValues_teal" translatable="false">teal</string>
+    <string name="pref_theme_entryValues_indigo" translatable="false">indigo</string>
+    <string name="pref_theme_entryValues_deepOrange" translatable="false">deepOrange</string>
+    <string name="pref_theme_entryValues_pink" translatable="false">pink</string>
+    <string name="pref_theme_entryValues_blueGrey" translatable="false">blueGrey</string>
+    <string name="pref_theme_entries_teal">Teal Green (Default)</string>
+    <string name="pref_theme_entries_indigo">Indigo Blue</string>
+    <string name="pref_theme_entries_deepOrange">Deep Orange</string>
+    <string name="pref_theme_entries_pink">Pink</string>
+    <string name="pref_theme_entries_blueGrey">Blue Grey</string>
 
     <string name="pref_movies_status_key" translatable="false">movies_status</string>
 </resources>

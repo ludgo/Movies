@@ -16,6 +16,7 @@
         android:title="@string/pref_show_title" />
 
     <CheckBoxPreference
+        android:defaultValue="false"
         android:key="@string/pref_enable_year_key"
         android:summaryOff="@string/pref_enable_year_off"
         android:summaryOn="@string/pref_enable_year_on"
@@ -29,4 +30,11 @@
         android:singleLine="true"
         android:title="@string/pref_year_title"
         custom:minLength="4" />
+
+    <ListPreference
+        android:defaultValue="@string/pref_theme_entryValues_default"
+        android:entries="@array/pref_theme_entries"
+        android:entryValues="@array/pref_theme_entryValues"
+        android:key="@string/pref_theme_key"
+        android:title="@string/pref_theme_title" />
 </PreferenceScreen>

@@ -19,4 +19,19 @@
         <item>@string/pref_show_entries_favorites</item>
     </string-array>
 
+    <string-array name="pref_theme_entryValues">
+        <item>@string/pref_theme_entryValues_teal</item>
+        <item>@string/pref_theme_entryValues_indigo</item>
+        <item>@string/pref_theme_entryValues_deepOrange</item>
+        <item>@string/pref_theme_entryValues_pink</item>
+        <item>@string/pref_theme_entryValues_blueGrey</item>
+    </string-array>
+    <string-array name="pref_theme_entries">
+        <item>@string/pref_theme_entries_teal</item>
+        <item>@string/pref_theme_entries_indigo</item>
+        <item>@string/pref_theme_entries_deepOrange</item>
+        <item>@string/pref_theme_entries_pink</item>
+        <item>@string/pref_theme_entries_blueGrey</item>
+    </string-array>
+
 </resources>

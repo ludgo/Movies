@@ -87,6 +87,26 @@ public class Utility {
     }
 
     /**
+     * @return the theme to style UI
+     */
+    public static int getPreferredTheme(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String themeString = preferences.getString(context.getString(R.string.pref_theme_key),
+                context.getString(R.string.pref_theme_entryValues_default));
+        if (themeString.equals(context.getString(R.string.pref_theme_entryValues_indigo))) {
+            return R.style.Movies_ThemeIndigo;
+        } else if (themeString.equals(context.getString(R.string.pref_theme_entryValues_deepOrange))) {
+            return R.style.Movies_ThemeDeepOrange;
+        } else if (themeString.equals(context.getString(R.string.pref_theme_entryValues_pink))) {
+            return R.style.Movies_ThemePink;
+        } else if (themeString.equals(context.getString(R.string.pref_theme_entryValues_blueGrey))) {
+            return R.style.Movies_ThemeBlueGrey;
+        } else {
+            return R.style.Movies_ThemeTeal;
+        }
+    }
+
+    /**
      * To be used only in activities with derived theme
      * @return refresh image with respect to the current theme
      */

@@ -9,10 +9,13 @@ import android.view.MenuItem;
 
 public class DetailActivity extends ActionBarActivity {
 
+    private static int preferredTheme;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Movies_ThemePink);
+        preferredTheme = Utility.getPreferredTheme(this);
+        setTheme(preferredTheme);
 
         // static approach when setting fragment
         setContentView(R.layout.activity_detail);
@@ -34,5 +37,14 @@ public class DetailActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        int currentTheme = Utility.getPreferredTheme(this);
+        if (preferredTheme != currentTheme) {
+            recreate();
+        }
+        super.onResume();
     }
 }

@@ -40,18 +40,20 @@ public class MoviesService extends IntentService {
 
     // Annotated interface to provide server status integer description
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MOVIES_STATUS_LOADING,
+    @IntDef({MOVIES_STATUS_NO_CONNECTION,
+            MOVIES_STATUS_LOADING,
             MOVIES_STATUS_OK,
             MOVIES_STATUS_SERVER_DOWN,
             MOVIES_STATUS_SERVER_INVALID,
             MOVIES_STATUS_UNKNOWN})
     public @interface MoviesStatus {}
 
-    public static final int MOVIES_STATUS_LOADING = 0;
-    public static final int MOVIES_STATUS_OK = 1;
-    public static final int MOVIES_STATUS_SERVER_DOWN = 2;
-    public static final int MOVIES_STATUS_SERVER_INVALID = 3;
-    public static final int MOVIES_STATUS_UNKNOWN = 4;
+    public static final int MOVIES_STATUS_NO_CONNECTION = 0;
+    public static final int MOVIES_STATUS_LOADING = 1;
+    public static final int MOVIES_STATUS_OK = 2;
+    public static final int MOVIES_STATUS_SERVER_DOWN = 3;
+    public static final int MOVIES_STATUS_SERVER_INVALID = 4;
+    public static final int MOVIES_STATUS_UNKNOWN = 5;
 
     public MoviesService() {
         super("MoviesService");
@@ -59,6 +61,12 @@ public class MoviesService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        if (!Utility.isNetworkAvailable(this)) {
+            // Fetching would be useless without connection
+            setMoviesStatus(this, MOVIES_STATUS_NO_CONNECTION);
+            return;
+        }
 
         // At the beginning, 'reset' server status which notifies that fetching isn't completed
         setMoviesStatus(this, MOVIES_STATUS_LOADING);

@@ -188,7 +188,8 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ( key.equals(getString(R.string.pref_movies_status_key)) ) {
+        // Listen to change only if fragment's activity still exists
+        if (isAdded() && key.equals(getString(R.string.pref_movies_status_key)) ) {
             updateEmptyView();
         }
     }
@@ -266,21 +267,15 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
         mPreviousPageView.setVisibility(View.GONE);
         mNextPageView.setVisibility(View.GONE);
 
-        if (!Utility.isNetworkAvailable(getActivity())) {
-            // Modification of the empty view in case of no connection
-            mEmptyView.setText(R.string.view_empty_no_connection);
-            mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
-                    Utility.getRefreshDrawable(getActivity()));
+        if (!cursor.moveToFirst()
+                || !Utility.isNetworkAvailable(getActivity())) {
+            // The cursor is either empty or to be nullified
+            updateEmptyView();
             // No action without connection since the whole app is based on fetching immediate data
             mGridAdapter.swapCursor(null);
-            return;
-        }
-
-        mGridAdapter.swapCursor(cursor);
-
-        if (!cursor.moveToFirst()) {
-            updateEmptyView();
         } else {
+            mGridAdapter.swapCursor(cursor);
+
             // Navigate through the pages
             if (page > 1) {
                 mPreviousPageView.setVisibility(View.VISIBLE);
@@ -324,8 +319,14 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
 
         @MoviesService.MoviesStatus int moviesStatus = Utility.getMoviesStatus(getActivity());
         switch (moviesStatus) {
+            case MoviesService.MOVIES_STATUS_NO_CONNECTION:
+                // Modification of the empty view in case of no connection
+                mEmptyView.setText(R.string.view_empty_no_connection);
+                mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+                        Utility.getRefreshDrawable(getActivity()));
+                break;
             case MoviesService.MOVIES_STATUS_LOADING:
-                // Modification of the empty view in case of incomplete fetching
+                // Modification of the empty view in case of incomplete fetching yet
                 mEmptyView.setText(R.string.view_empty_loading);
                 mEmptyView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
                 break;
