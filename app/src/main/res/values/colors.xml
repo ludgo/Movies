@@ -3,26 +3,31 @@
     <color name="grey_600">#757575</color>
 
     <color name="teal">#009688</color>
+    <color name="teal700">#00796B</color>
     <color name="teal_alpha25">#40009688</color>
     <color name="teal_alpha50">#80009688</color>
     <color name="teal_alpha75">#BF009688</color>
 
     <color name="indigo">#3F51B5</color>
+    <color name="indigo700">#303F9F</color>
     <color name="indigo_alpha25">#403F51B5</color>
     <color name="indigo_alpha50">#803F51B5</color>
     <color name="indigo_alpha75">#BF3F51B5</color>
 
     <color name="deepOrange">#FF5722</color>
+    <color name="deepOrange700">#E64A19</color>
     <color name="deepOrange_alpha25">#40FF5722</color>
     <color name="deepOrange_alpha50">#80FF5722</color>
     <color name="deepOrange_alpha75">#BFFF5722</color>
 
     <color name="pink">#E91E63</color>
+    <color name="pink700">#C2185B</color>
     <color name="pink_alpha25">#40E91E63</color>
     <color name="pink_alpha50">#80E91E63</color>
     <color name="pink_alpha75">#BFE91E63</color>
 
     <color name="blueGrey">#607D8B</color>
+    <color name="blueGrey700">#455A64</color>
     <color name="blueGrey_alpha25">#40607D8B</color>
     <color name="blueGrey_alpha50">#80607D8B</color>
     <color name="blueGrey_alpha75">#BF607D8B</color>

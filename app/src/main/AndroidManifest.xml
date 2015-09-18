@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ludgo.android.movies" >
+    package="com.ludgo.android.movies">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,10 +9,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +22,7 @@
         <activity
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -30,19 +30,23 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/SettingsTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
         <provider
-            android:authorities="com.ludgo.android.movies"
             android:name=".data.MoviesProvider"
-            android:exported="false"/>
-        <service android:name=".service.MoviesService"/>
-        <service android:name=".service.TrailersService"/>
-        <service android:name=".service.ReviewsService"/>
-        <receiver android:name=".service.ReviewsService$FetchReceiver"/>
+            android:authorities="com.ludgo.android.movies"
+            android:exported="false" />
+
+        <service android:name=".service.MoviesService" />
+        <service android:name=".service.TrailersService" />
+        <service android:name=".service.ReviewsService" />
+
+        <receiver android:name=".service.ReviewsService$FetchReceiver" />
     </application>
 
 </manifest>

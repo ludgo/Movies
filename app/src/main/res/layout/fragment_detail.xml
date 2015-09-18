@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:background="?theme_color"
+            android:background="?attr/colorPrimary"
             android:padding="32dp"
             android:textColor="@android:color/white"
             android:textSize="45sp" />
@@ -68,7 +68,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
-                    android:textColor="@color/grey_600"
                     android:textSize="24sp" />
 
                 <TextView
@@ -98,8 +97,7 @@
             android:paddingBottom="8dp"
             android:paddingLeft="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
-            android:paddingTop="32dp"
-            android:textColor="@color/grey_600" />
+            android:paddingTop="32dp" />
 
         <include layout="@layout/fragment_detail_line" />
 
@@ -110,7 +108,6 @@
             android:paddingRight="@dimen/SideSpace"
             android:paddingTop="8dp"
             android:text="@string/view_trailers"
-            android:textColor="@color/grey_600"
             android:textSize="18sp" />
 
         <LinearLayout
@@ -130,7 +127,6 @@
             android:paddingRight="@dimen/SideSpace"
             android:paddingTop="8dp"
             android:text="@string/view_reviews"
-            android:textColor="@color/grey_600"
             android:textSize="18sp" />
 
         <LinearLayout

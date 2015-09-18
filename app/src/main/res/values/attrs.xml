@@ -5,7 +5,6 @@
         <attr name="maxLength" format="integer" />
     </declare-styleable>
 
-    <attr name="theme_color" format="reference" />
     <attr name="theme_color_alpha25" format="reference" />
     <attr name="theme_color_alpha50" format="reference" />
     <attr name="theme_color_alpha75" format="reference" />

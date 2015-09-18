@@ -1,9 +1,12 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar" />
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary">@color/grey_600</item>
+    </style>
 
     <style name="Movies_ThemeTeal" parent="AppTheme">
-        <item name="theme_color">@color/teal</item>
+        <item name="colorPrimary">@color/teal</item>
+        <item name="colorPrimaryDark">@color/teal700</item>
         <item name="theme_color_alpha25">@color/teal_alpha25</item>
         <item name="theme_color_alpha50">@color/teal_alpha50</item>
         <item name="theme_color_alpha75">@color/teal_alpha75</item>
@@ -15,7 +18,8 @@
     </style>
 
     <style name="Movies_ThemeIndigo" parent="AppTheme">
-        <item name="theme_color">@color/indigo</item>
+        <item name="colorPrimary">@color/indigo</item>
+        <item name="colorPrimaryDark">@color/indigo700</item>
         <item name="theme_color_alpha25">@color/indigo_alpha25</item>
         <item name="theme_color_alpha50">@color/indigo_alpha50</item>
         <item name="theme_color_alpha75">@color/indigo_alpha75</item>
@@ -27,7 +31,8 @@
     </style>
 
     <style name="Movies_ThemeDeepOrange" parent="AppTheme">
-        <item name="theme_color">@color/deepOrange</item>
+        <item name="colorPrimary">@color/deepOrange</item>
+        <item name="colorPrimaryDark">@color/deepOrange700</item>
         <item name="theme_color_alpha25">@color/deepOrange_alpha25</item>
         <item name="theme_color_alpha50">@color/deepOrange_alpha50</item>
         <item name="theme_color_alpha75">@color/deepOrange_alpha75</item>
@@ -39,7 +44,8 @@
     </style>
 
     <style name="Movies_ThemePink" parent="AppTheme">
-        <item name="theme_color">@color/pink</item>
+        <item name="colorPrimary">@color/pink</item>
+        <item name="colorPrimaryDark">@color/pink700</item>
         <item name="theme_color_alpha25">@color/pink_alpha25</item>
         <item name="theme_color_alpha50">@color/pink_alpha50</item>
         <item name="theme_color_alpha75">@color/pink_alpha75</item>
@@ -51,7 +57,8 @@
     </style>
 
     <style name="Movies_ThemeBlueGrey" parent="AppTheme">
-        <item name="theme_color">@color/blueGrey</item>
+        <item name="colorPrimary">@color/blueGrey</item>
+        <item name="colorPrimaryDark">@color/blueGrey700</item>
         <item name="theme_color_alpha25">@color/blueGrey_alpha25</item>
         <item name="theme_color_alpha50">@color/blueGrey_alpha50</item>
         <item name="theme_color_alpha75">@color/blueGrey_alpha75</item>
@@ -60,6 +67,14 @@
         <item name="theme_refresh_selector">@drawable/ic_refresh_selector_bluegrey</item>
         <item name="theme_loading_selector">@drawable/loading_ring_bluegrey</item>
         <item name="theme_state_selector">@drawable/state_selector_bluegrey</item>
+    </style>
+
+    <style name="SettingsTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/SettingsActionBar</item>
+    </style>
+
+    <style name="SettingsActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:height">56dp</item>
     </style>
 
     <style name="GridStyle" />
