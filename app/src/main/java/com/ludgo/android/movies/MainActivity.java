@@ -3,13 +3,14 @@ package com.ludgo.android.movies;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 
 
-public class MainActivity extends ActionBarActivity implements GridFragment.Callback {
+public class MainActivity extends AppCompatActivity implements GridFragment.Callback {
 
     static boolean isSingleFragment;
 
@@ -37,6 +38,11 @@ public class MainActivity extends ActionBarActivity implements GridFragment.Call
 
         // dynamic approach when setting both fragments
         setContentView(R.layout.activity_main);
+        // customise toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         isSingleFragment = findViewById(R.id.holder_detail) == null;
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

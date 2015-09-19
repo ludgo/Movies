@@ -1,7 +1,8 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColorPrimary">@color/grey_600</item>
+        <item name="toolbarStyle">@style/AppToolbar</item>
     </style>
 
     <style name="Movies_ThemeTeal" parent="AppTheme">
@@ -67,6 +68,11 @@
         <item name="theme_refresh_selector">@drawable/ic_refresh_selector_bluegrey</item>
         <item name="theme_loading_selector">@drawable/loading_ring_bluegrey</item>
         <item name="theme_state_selector">@drawable/state_selector_bluegrey</item>
+    </style>
+
+    <style name="AppToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="popupTheme">@style/Theme.AppCompat.Light</item>
     </style>
 
     <style name="SettingsTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
