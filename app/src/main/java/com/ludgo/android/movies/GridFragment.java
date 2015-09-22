@@ -104,19 +104,24 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
+        // Find out if one/two pane mode is to be created
+        boolean isOnePaneMode = MainActivity.isSingleFragment;
         // Get width of the actual screen
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        if (!MainActivity.isSingleFragment) {
-            // On tablet, the ratio of fragments is 1:1
+        // Find out immediate screen orientation
+        int orientation = getResources().getConfiguration().orientation;
+
+        if (!isOnePaneMode) {
+            // On tablet, the ratio of fragment's width is 1:1,
+            // this fragment will overlap only the left half
             width = width / 2;
         }
 
+        // Choose the width of single item appropriately
         int itemWidth;
-        // Choose grid style
-        int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             // 2 columns when portrait orientation
             mGridView.setNumColumns(2);
@@ -125,6 +130,14 @@ public class GridFragment extends Fragment implements LoaderManager.LoaderCallba
             // 3 columns when landscape orientation
             mGridView.setNumColumns(3);
             itemWidth = width / 3;
+            // In case the width of landscape screen is between 480dp and 600dp,
+            // a special layout is provided
+            if (isOnePaneMode) {
+                int maxItemWidth = Utility.dipToPx(getActivity(), 160);
+                if (itemWidth > maxItemWidth) {
+                    itemWidth = maxItemWidth;
+                }
+            }
         }
         mGridView.setColumnWidth(itemWidth);
 

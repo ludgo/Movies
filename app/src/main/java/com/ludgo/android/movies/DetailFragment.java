@@ -139,8 +139,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             // set poster
             final String POSTER_PATH = cursor.getString(3);
             // 168dp is the width of posterContainer without padding
-            int widthInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 168,
-                    getResources().getDisplayMetrics());
+            int widthInPx = Utility.dipToPx(getActivity(), 168);
             String posterUrl = Utility.createPosterUrl(POSTER_PATH, widthInPx);
             Picasso.with(getActivity())
                     .load(posterUrl)

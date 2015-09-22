@@ -3,4 +3,7 @@
 
     <dimen name="SideSpace">24dp</dimen>
 
+    <dimen name="ToolbarElevation">4dp</dimen>
+    <dimen name="GridElevation">24dp</dimen>
+
 </resources>
