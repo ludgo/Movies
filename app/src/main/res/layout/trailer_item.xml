@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/trailer"
+    style="@style/TrailerStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?theme_state_selector"
     android:drawableLeft="@drawable/ic_play_selector"
-    android:drawableStart="@drawable/ic_play_selector"
     android:gravity="center_vertical"
-    android:minHeight="72dp"
-    android:textColor="@color/text_trailer_selector"
-    android:textSize="16sp" />
+    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+    android:textColor="@color/text_trailer_selector" />

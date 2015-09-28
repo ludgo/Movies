@@ -9,7 +9,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:elevation="@dimen/ToolbarElevation"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <fragment

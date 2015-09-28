@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TrailerStyle">
+        <item name="android:drawablePadding">48dp</item>
+        <item name="android:drawableRight">?theme_next_selector</item>
+        <item name="android:minHeight">56dp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DetailFragment">
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:columnCount="2">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/colorPrimary"
+            android:elevation="@dimen/ToolbarElevation"
+            android:paddingBottom="24dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:paddingTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+            android:textColor="@android:color/white"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1" />
+
+        <TextView
+            android:id="@+id/year"
+            android:layout_width="0dp"
+            android:gravity="center_horizontal"
+            android:paddingBottom="16dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:paddingTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_gravity="fill_horizontal" />
+
+        <FrameLayout
+            android:paddingBottom="24dp"
+            android:paddingRight="@dimen/SideSpace"
+            app:layout_gravity="fill_vertical"
+            app:layout_rowSpan="3">
+
+            <ProgressBar
+                android:layout_width="168dp"
+                android:layout_height="240dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="?theme_loading_selector"
+                android:indeterminateDuration="2000" />
+
+            <ImageView
+                android:id="@+id/poster"
+                android:layout_width="168dp"
+                android:layout_height="240dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/voteAverage"
+            android:layout_width="0dp"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center_horizontal"
+            android:paddingBottom="64dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@android:color/black"
+            app:layout_gravity="fill_horizontal" />
+
+        <TextView
+            android:id="@+id/favorite"
+            android:layout_width="0dp"
+            android:drawableTop="@drawable/ic_star_selector"
+            android:paddingBottom="24dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            app:layout_gravity="fill" />
+
+        <TextView
+            android:id="@+id/overview"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <View
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="@dimen/SideSpace"
+            android:layout_marginRight="@dimen/SideSpace"
+            android:layout_marginTop="8dp"
+            android:background="?attr/colorPrimary"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <TextView
+            android:paddingBottom="8dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:text="@string/view_trailers"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <LinearLayout
+            android:id="@+id/trailers"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <View
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="@dimen/SideSpace"
+            android:layout_marginRight="@dimen/SideSpace"
+            android:layout_marginTop="8dp"
+            android:background="?attr/colorPrimary"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <TextView
+            android:paddingBottom="16dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:text="@string/view_reviews"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+        <LinearLayout
+            android:id="@+id/reviews"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            app:layout_columnSpan="2"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill_horizontal" />
+
+    </android.support.v7.widget.GridLayout>
+
+</ScrollView>

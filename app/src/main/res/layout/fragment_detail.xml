@@ -5,48 +5,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:overScrollMode="never"
     tools:context=".DetailFragment">
 
     <android.support.v7.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
         app:columnCount="2">
 
         <TextView
             android:id="@+id/title"
             android:layout_marginBottom="8dp"
             android:background="?attr/colorPrimary"
+            android:elevation="@dimen/ToolbarElevation"
             android:paddingBottom="32dp"
             android:paddingLeft="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
             android:textColor="@android:color/white"
-            android:textSize="45sp"
             app:layout_columnSpan="2"
             app:layout_columnWeight="1" />
 
         <FrameLayout
             android:paddingBottom="24dp"
-            app:layout_columnWeight="1"
-            app:layout_gravity="fill"
+            android:paddingLeft="@dimen/SideSpace"
+            app:layout_gravity="fill_vertical"
             app:layout_rowSpan="3">
 
             <ProgressBar
-                android:layout_width="192dp"
+                android:layout_width="168dp"
                 android:layout_height="240dp"
                 android:indeterminate="true"
                 android:indeterminateDrawable="?theme_loading_selector"
-                android:indeterminateDuration="2000"
-                android:paddingLeft="@dimen/SideSpace"
-                android:paddingStart="@dimen/SideSpace" />
+                android:indeterminateDuration="2000" />
 
             <ImageView
                 android:id="@+id/poster"
-                android:layout_width="192dp"
+                android:layout_width="168dp"
                 android:layout_height="240dp"
-                android:contentDescription="@null"
-                android:paddingLeft="@dimen/SideSpace"
-                android:paddingStart="@dimen/SideSpace" />
+                android:contentDescription="@null" />
 
         </FrameLayout>
 
@@ -55,9 +52,9 @@
             android:layout_width="0dp"
             android:gravity="center_horizontal"
             android:paddingBottom="16dp"
-            android:paddingEnd="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
-            android:textSize="24sp"
+            android:paddingTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_columnWeight="1"
             app:layout_gravity="fill_horizontal" />
 
@@ -67,8 +64,8 @@
             android:fontFamily="sans-serif-condensed"
             android:gravity="center_horizontal"
             android:paddingBottom="64dp"
-            android:paddingEnd="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="@android:color/black"
             app:layout_columnWeight="1"
             app:layout_gravity="fill_horizontal" />
@@ -78,7 +75,6 @@
             android:layout_width="0dp"
             android:drawableTop="@drawable/ic_star_selector"
             android:paddingBottom="24dp"
-            android:paddingEnd="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
             app:layout_columnWeight="1"
             app:layout_gravity="fill" />
@@ -87,6 +83,7 @@
             android:id="@+id/overview"
             android:paddingLeft="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_columnSpan="2"
             app:layout_columnWeight="1"
             app:layout_gravity="fill_horizontal" />
@@ -103,10 +100,11 @@
             app:layout_gravity="fill_horizontal" />
 
         <TextView
+            android:paddingBottom="8dp"
             android:paddingLeft="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
             android:text="@string/view_trailers"
-            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             app:layout_columnSpan="2"
             app:layout_columnWeight="1"
             app:layout_gravity="fill_horizontal" />
@@ -132,10 +130,11 @@
             app:layout_gravity="fill_horizontal" />
 
         <TextView
+            android:paddingBottom="16dp"
             android:paddingLeft="@dimen/SideSpace"
             android:paddingRight="@dimen/SideSpace"
             android:text="@string/view_reviews"
-            android:textSize="18sp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             app:layout_columnSpan="2"
             app:layout_columnWeight="1"
             app:layout_gravity="fill_horizontal" />

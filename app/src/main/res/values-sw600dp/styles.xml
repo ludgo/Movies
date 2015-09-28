@@ -5,4 +5,8 @@
         <item name="android:choiceMode">singleChoice</item>
     </style>
 
+    <style name="TrailerStyle">
+        <item name="android:minHeight">72dp</item>
+    </style>
+
 </resources>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DetailFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/colorPrimary"
+            android:elevation="@dimen/ToolbarElevation"
+            android:paddingBottom="24dp"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            android:paddingTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+            android:textColor="@android:color/white" />
+
+        <android.support.v7.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            app:columnCount="3">
+
+            <TextView
+                android:id="@+id/year"
+                android:layout_width="0dp"
+                android:gravity="center_horizontal"
+                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill_horizontal" />
+
+            <TextView
+                android:id="@+id/favorite"
+                android:drawableLeft="@drawable/ic_star_selector"
+                android:drawablePadding="64dp"
+                app:layout_gravity="fill_vertical"
+                app:layout_rowSpan="2" />
+
+            <FrameLayout
+                android:paddingBottom="24dp"
+                app:layout_gravity="fill_vertical"
+                app:layout_rowSpan="3">
+
+                <ProgressBar
+                    android:layout_width="168dp"
+                    android:layout_height="240dp"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="?theme_loading_selector"
+                    android:indeterminateDuration="2000" />
+
+                <ImageView
+                    android:id="@+id/poster"
+                    android:layout_width="168dp"
+                    android:layout_height="240dp"
+                    android:contentDescription="@null" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/voteAverage"
+                android:layout_width="0dp"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="center_horizontal"
+                android:paddingBottom="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@android:color/black"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill_horizontal" />
+
+            <TextView
+                android:id="@+id/overview"
+                android:layout_width="0dp"
+                android:gravity="center_vertical"
+                android:paddingBottom="24dp"
+                android:paddingRight="32dp"
+                android:paddingTop="24dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_columnSpan="2"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill" />
+
+        </android.support.v7.widget.GridLayout>
+
+        <android.support.v7.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/SideSpace"
+            android:paddingRight="@dimen/SideSpace"
+            app:columnCount="3">
+
+            <TextView
+                android:layout_width="0dp"
+                android:paddingBottom="8dp"
+                android:text="@string/view_trailers"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill_horizontal" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_gravity="fill_vertical" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:paddingBottom="16dp"
+                android:text="@string/view_reviews"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill_horizontal" />
+
+            <LinearLayout
+                android:id="@+id/trailers"
+                android:layout_width="0dp"
+                android:orientation="vertical"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill_horizontal" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:background="?attr/colorPrimary"
+                app:layout_gravity="fill_vertical" />
+
+            <LinearLayout
+                android:id="@+id/reviews"
+                android:layout_width="0dp"
+                android:orientation="vertical"
+                app:layout_columnWeight="1"
+                app:layout_gravity="fill_horizontal" />
+
+        </android.support.v7.widget.GridLayout>
+
+    </LinearLayout>
+
+</ScrollView>

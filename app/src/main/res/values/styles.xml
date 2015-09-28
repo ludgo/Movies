@@ -85,4 +85,8 @@
 
     <style name="GridStyle" />
 
+    <style name="TrailerStyle">
+        <item name="android:minHeight">72dp</item>
+    </style>
+
 </resources>
