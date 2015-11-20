@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ludgo.android.movies.BuildConfig;
 import com.ludgo.android.movies.Utility;
 import com.ludgo.android.movies.data.MoviesContract;
 
@@ -56,8 +57,6 @@ public class ReviewsService extends IntentService {
         // Will contain the raw JSON response as a string.
         String reviewsApiString;
 
-        String apiKey = Utility.API_KEY;
-
         try {
             // Construct the URL for the themoviedb.org API query
             // documentation at http://docs.themoviedb.apiary.io
@@ -66,7 +65,7 @@ public class ReviewsService extends IntentService {
             final String KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
-                    .appendQueryParameter(KEY_PARAM, apiKey)
+                    .appendQueryParameter(KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());

@@ -1,10 +1,11 @@
-/gradle.properties
+/build
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
-/build
-.idea/
-.idea/misc.xml
 /captures
+
+# JetBrains recommendation
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/libraries
+*.iws

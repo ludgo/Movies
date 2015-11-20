@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.ludgo.android.movies.BuildConfig;
 import com.ludgo.android.movies.R;
 import com.ludgo.android.movies.Utility;
 import com.ludgo.android.movies.data.MoviesContract;
@@ -84,7 +85,6 @@ public class MoviesService extends IntentService {
         if (intent.hasExtra(PAGE_EXTRA)){
             pageStr = intent.getStringExtra(PAGE_EXTRA);
         }
-        String apiKey = Utility.API_KEY;
 
         try {
             // Construct the URL for the themoviedb.org API query
@@ -100,7 +100,7 @@ public class MoviesService extends IntentService {
                     .appendQueryParameter(SORT_PARAM, sortRule)
                     .appendQueryParameter(YEAR_PARAM, year)
                     .appendQueryParameter(PAGE_PARAM, pageStr)
-                    .appendQueryParameter(KEY_PARAM, apiKey)
+                    .appendQueryParameter(KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());

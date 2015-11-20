@@ -13,9 +13,6 @@ import com.ludgo.android.movies.service.MoviesService;
 
 public class Utility {
 
-    // # is private key for developer
-    public static final String API_KEY = "#";
-
     /**
      * @param ending    is in format '/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg'
      * @param viewWidth is the width of ImageView in pixels
