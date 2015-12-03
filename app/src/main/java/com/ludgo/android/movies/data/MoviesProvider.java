@@ -154,19 +154,19 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
-//            // "trailers" - all trailers table
-//            case TRAILERS: {
-//                retCursor = mOpenHelper.getReadableDatabase().query(
-//                        MoviesContract.TrailersEntry.TABLE_NAME,
-//                        projection,
-//                        selection,
-//                        selectionArgs,
-//                        null,
-//                        null,
-//                        sortOrder
-//                );
-//                break;
-//            }
+            // "trailers" - all trailers table
+            case TRAILERS: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.TrailersEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             // "trailers/#" - all trailers belonging to the particular movie
             case TRAILERS_MOVIE: {
                 String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);
@@ -197,19 +197,19 @@ public class MoviesProvider extends ContentProvider {
                 );
                 break;
             }
-//            // "reviews" - all reviews table
-//            case REVIEWS: {
-//                retCursor = mOpenHelper.getReadableDatabase().query(
-//                        MoviesContract.ReviewsEntry.TABLE_NAME,
-//                        projection,
-//                        selection,
-//                        selectionArgs,
-//                        null,
-//                        null,
-//                        sortOrder
-//                );
-//                break;
-//            }
+            // "reviews" - all reviews table
+            case REVIEWS: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MoviesContract.ReviewsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             // "reviews/#" - all reviews belonging to the particular movie
             case REVIEWS_MOVIE: {
                 String movieIdStr = MoviesContract.getMovieIdStrFromUri(uri);

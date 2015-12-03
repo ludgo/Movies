@@ -147,4 +147,40 @@ public class Utility {
         return sp.getInt(context.getString(R.string.pref_movies_status_key),
                 MoviesService.MOVIES_STATUS_UNKNOWN);
     }
+
+//    /**
+//     * Debugging method to display actual numbers of items in db
+//     */
+//    public static void logDbCounts(Context context, String logTag) {
+//
+//        Cursor cursorMovies = context.getContentResolver().query(
+//                MoviesContract.MoviesEntry.CONTENT_URI,
+//                new String[]{MoviesContract.MoviesEntry.TABLE_NAME + "." +
+//                        MoviesContract.MoviesEntry._ID},
+//                null,
+//                null,
+//                null);
+//        Log.d(logTag, "Movies in database: " + cursorMovies.getCount());
+//        cursorMovies.close();
+//
+//        Cursor cursorTrailers = context.getContentResolver().query(
+//                MoviesContract.TrailersEntry.CONTENT_URI,
+//                new String[]{MoviesContract.TrailersEntry.TABLE_NAME + "." +
+//                        MoviesContract.TrailersEntry._ID},
+//                null,
+//                null,
+//                null);
+//        Log.d(logTag, "Trailers in database: " + cursorTrailers.getCount());
+//        cursorTrailers.close();
+//
+//        Cursor cursorReviews = context.getContentResolver().query(
+//                MoviesContract.ReviewsEntry.CONTENT_URI,
+//                new String[]{MoviesContract.ReviewsEntry.TABLE_NAME + "." +
+//                        MoviesContract.ReviewsEntry._ID},
+//                null,
+//                null,
+//                null);
+//        Log.d(logTag, "Reviews in database: " + cursorReviews.getCount());
+//        cursorReviews.close();
+//    }
 }

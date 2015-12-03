@@ -22,10 +22,28 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase sqLiteDatabase){
+        super.onOpen(sqLiteDatabase);
+
+        // http://stackoverflow.com/questions/22791217/should-i-enable-foreign-key-constraint-in-onopen-or-onconfigure
+        if (!sqLiteDatabase.isReadOnly()) {
+            // Foreign keys necessary for cascading delete
+            sqLiteDatabase.execSQL("PRAGMA foreign_keys=ON;");
+        }
+    }
+
     // Note: Database relies on not null values to provide the best user experience
     // and to avoid buggy environment
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
+        // http://stackoverflow.com/questions/22791217/should-i-enable-foreign-key-constraint-in-onopen-or-onconfigure
+        if (!sqLiteDatabase.isReadOnly()) {
+            // Foreign keys necessary for cascading delete
+            sqLiteDatabase.execSQL("PRAGMA foreign_keys=ON;");
+        }
+
         final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
 
                 // _ID constraints are not required directly when constructing these tables,

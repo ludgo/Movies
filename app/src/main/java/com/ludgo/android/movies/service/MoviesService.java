@@ -131,6 +131,12 @@ public class MoviesService extends IntentService {
                 return;
             }
             moviesApiString = buffer.toString();
+
+            if (pageStr.equals("1")){
+                // Delete will always be performed when a user begins browsing the grid on the 1st page
+                deleteNotFavorites();
+            }
+
             getMoviesDataFromJson(moviesApiString);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
@@ -252,6 +258,17 @@ public class MoviesService extends IntentService {
             e.printStackTrace();
             setMoviesStatus(this, MOVIES_STATUS_SERVER_INVALID);
         }
+    }
+
+    /**
+     * Delete movies from db except those saved in favorites
+     */
+    private void deleteNotFavorites(){
+        // Delete not to build up an endless movies list,
+        // a space for possible changes in api information
+        int dbEntriesDeleted = this.getContentResolver().delete(MoviesContract.MoviesEntry.CONTENT_URI,
+                MoviesContract.MoviesEntry.COLUMN_FAVORITE + " = 0",
+                null);
     }
 
     /**
